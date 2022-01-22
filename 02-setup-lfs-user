@@ -63,4 +63,4 @@ EOF"
 validate_lfs_mountpoint
 setup_lfs_user
 setup_lfs_bash
-echo "Please login to lfs user using \"su - lfs\" and execute \"build_toolchain\" present inside \"~/automate-lfs-build\" script"
+echo "Please login to lfs user using \"su - lfs\" and execute \"03-build-toolchain\" present inside \"~/automate-lfs-build\" directory"

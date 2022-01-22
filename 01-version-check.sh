@@ -58,7 +58,7 @@ printf "Checking that /usr/bin/yacc -> bison ... "
 if [ -h /usr/bin/yacc ]; then
     success "/usr/bin/yacc -> $(readlink -f /usr/bin/yacc)"
 elif [ -x /usr/bin/yacc ]; then
-    success "yacc is $(/usr/bin/yacc --version | head -n1)"
+    success "yacc is $(/usr/bin/yacc -V | head -n1)"
 else
     error "yacc not found" 
 fi
@@ -80,7 +80,7 @@ fi
 
 HAS_GPP=0
 assert_has gcc && success $(gcc --version | head -n1)
-assert_has g++ && success HAS_GPP=1 && $(g++ --version | head -n1)
+assert_has g++ && HAS_GPP=1 && success $(g++ --version | head -n1)
 assert_has ldd glibc && success $(ldd --version | head -n1 | cut -d" " -f2-)
 assert_has grep && success $(grep --version | head -n1)
 assert_has gzip && success $(gzip --version | head -n1)
@@ -96,6 +96,7 @@ assert_has makeinfo texinfo && success $(makeinfo --version | head -n1)
 assert_has xz && success $(xz --version | head -n1)
 
 if [ $HAS_GPP -eq 1 ]; then 
+    printf "Checking g++ compilation ... "
     echo 'int main(){}' > dummy.c && g++ -o dummy dummy.c
     if [ -x dummy ]
         then success "g++ compilation OK";
