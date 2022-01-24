@@ -5,6 +5,7 @@ NAME=m4
 VERSION=${M4_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/m4/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=2
 
 patchup()
 {

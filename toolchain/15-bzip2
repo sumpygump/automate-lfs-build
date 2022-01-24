@@ -5,6 +5,7 @@ NAME=bzip2
 VERSION=${BZIP_VER}
 FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
+SBUx10=1
 
 configure()
 {

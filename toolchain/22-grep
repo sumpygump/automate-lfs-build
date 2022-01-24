@@ -5,6 +5,7 @@ NAME=grep
 VERSION=${GREP_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/grep/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=2
 
 configure()
 {

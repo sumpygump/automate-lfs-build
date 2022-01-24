@@ -1,17 +1,19 @@
 #!/bin/bash
 
 ME=$(basename "$0")
-LOGPATH="/tmp/lfs-log"
-LOGFILE=${LOGPATH}/${ME}.txt
-TMP="/tmp/lfs-tmpbuild"
 SRCDIR="/lfs-source"
+TMP="$LFS/tmp/build"
+LOGPATH="$LFS/tmp/log"
+LOGFILE="${LOGPATH}/${ME}.log"
 FILE_DB="${LOGPATH}/file_db.txt"
+RATES_DB="${LOGPATH}/rate_history.txt"
 SILENT_MAKE="-s"
 JOBS=$(($(nproc) * 4))
 MAKE_JOBS="-j$JOBS"
 BUILD_PATH=
 
-. "$(dirname "$0")"/../common/pkgversion
+ABS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+. $ABS_DIR/pkgversion
 
 [ ! -d "$TMP" ] && mkdir -p "$TMP"
 [ ! -d "$LOGPATH" ] && mkdir -p "$LOGPATH"
@@ -19,16 +21,31 @@ BUILD_PATH=
 
 [ -f "$LOGFILE" ] && rm -rf "$LOGFILE"
 
+log()
+{
+    echo "$1" >>"$LOGFILE"
+}
+
+echo_log()
+{
+    echo "$1" | tee -a "$LOGFILE"
+}
+
 default_extract()
 {
     local EXTRACT_DIR=$TMP
+    echo_log "Extracting $1 to $EXTRACT_DIR/"
     tar -xf "$1" -C "$EXTRACT_DIR"
 }
 
 default_fetch()
 {
     local DEST_DIR=$SRCDIR
+    log "Downloading $1"
+    printf "Downloading $1 ..."
     wget --quiet --directory-prefix="$DEST_DIR" "$1"
+    if [ $? -ne 0 ]; then return 1; fi
+    echo "done."
 }
 
 default_configure()
@@ -50,6 +67,7 @@ default_configure_chroot()
 
 default_cleanup()
 {
+    log "Removing $1"
     rm -rf "$1"
 }
 
@@ -58,9 +76,43 @@ add_to_filedb()
     echo "$ME" >> "$FILE_DB"
 }
 
+save_rate_history()
+{
+    if [ "$SBU_RATE" -gt "0" ]; then
+        echo "$ME $NAME $VERSION $SBUx10 $SECONDS $SBU_RATE" >> $RATES_DB
+    fi
+}
+
+print_completion_estimation()
+{
+    SBU_RATE=0
+    if [ -s "$RATES_DB" ]; then
+        # Calculate the average rate based on list of rates
+        SBU_RATE=$(awk '{ total += $6; count++ } END { printf "%.0f", total/count }' "$RATES_DB")
+    fi
+
+    if [ "$SBU_RATE" -gt "0" ]; then
+        est=$(($SBU_RATE*$1/10))
+        if [ "$est" -ge "60" ]; then
+            est_min=$(($est/60))
+            echo "Estimated completion in $est_min minutes ($est seconds)"
+        else
+            echo "Estimated completion in $est seconds"
+        fi
+    fi
+}
+
 clear_env()
 {
     ME=
     LOGFILE=
     BUILD_PATH=
+    NAME=
+    VERSION=
+    FETCH_URL=
+}
+
+zdate()
+{
+    date --utc -R
 }

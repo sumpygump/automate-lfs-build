@@ -5,6 +5,7 @@ NAME=tar
 VERSION=${TAR_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/tar/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=3
 
 configure()
 {

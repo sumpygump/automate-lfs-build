@@ -5,6 +5,7 @@ NAME=diffutils
 VERSION=${DIFFUTILS_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/diffutils/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=2
 
 configure()
 {

@@ -8,6 +8,7 @@ FETCH_MPFR="http://www.mpfr.org/mpfr-4.0.2/mpfr-${MPFR_VER}.tar.xz"
 FETCH_GMP="http://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz"
 FETCH_MPC="https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=110
 
 fetch()
 {
@@ -15,17 +16,17 @@ fetch()
         default_fetch "$FETCH_URL"
         [ $? -ne 0 ] && return $?
     fi
-    
+
     if [ ! -f "${SRCDIR}"/mpfr-"${MPFR_VER}".tar.xz ]; then
         default_fetch "$FETCH_MPFR"
         [ $? -ne 0 ] && return $?
     fi
-    
+
     if [ ! -f "${SRCDIR}"/gmp-"${GMP_VER}".tar.xz ]; then
         default_fetch "$FETCH_GMP"
         [ $? -ne 0 ] && return $?
     fi
-    
+
     if [ ! -f "${SRCDIR}"/mpc-"${MPC_VER}".tar.gz ]; then
         default_fetch "$FETCH_MPC"
         [ $? -ne 0 ] && return $?
@@ -72,10 +73,10 @@ patchup()
         #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file
         touch $file.orig
     done
-	
+
     case $(uname -m) in
     x86_64)
-	sed -e '/m64=/s/lib64/lib/' \
+    sed -e '/m64=/s/lib64/lib/' \
             -i.orig gcc/config/i386/t-linux64
     ;;
     esac

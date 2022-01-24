@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# -----------------
+# Utility functions
+# -----------------
+setup_terminal() {
+    TPUT_RESET=""
+    TPUT_RED=""
+    TPUT_GREEN=""
+    TPUT_YELLOW=""
+    TPUT_WHITE=""
+    TPUT_BGRED=""
+    test -t 1 || return 1 # abort if not a terminal
+    if command -v tput >/dev/null 2>&1; then
+        if [ $(($(tput colors 2>/dev/null))) -ge 8 ]; then
+            TPUT_RESET="$(tput sgr 0)"
+            TPUT_RED="$(tput setaf 1)"
+            TPUT_GREEN="$(tput setaf 2)"
+            TPUT_YELLOW="$(tput setaf 3)"
+            TPUT_WHITE="$(tput setaf 7)"
+            TPUT_BGRED="$(tput setab 1)"
+        fi
+    fi
+    return 0
+}
+info() {
+    printf "${TPUT_YELLOW}>> ${*}${TPUT_RESET}\n"
+}
+success() {
+    printf "${TPUT_GREEN}${*}${TPUT_RESET}\n"
+}
+error() {
+    printf "${TPUT_RED}ERROR: ${*}${TPUT_RESET}\n"
+}
+fatal() {
+    printf "${TPUT_BGRED}${TPUT_WHITE} ABORTED ${TPUT_RESET} ${*}\n"
+    exit 1
+}
+
+setup_terminal || echo >/dev/null

@@ -5,6 +5,7 @@ NAME=sed
 VERSION=${SED_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/sed/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=2
 
 configure()
 {

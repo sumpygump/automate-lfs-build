@@ -1,41 +1,56 @@
 #!/bin/bash
 
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+. $REPO_ROOT/common/common_utils
+. $REPO_ROOT/common/common_source
+
 if [ "$(id -u)" = 0 ]; then
-	echo "$0 script need to run as lfs user"
-	exit 1
+    fatal "You must run script $0 as lfs user"
 fi
 
 validate_environment()
 {
-    # TODO - Validate environment varaibles
+    # TODO - Validate environment variables
+    has_errors=0
     if [ "$PATH" != "/tools/bin:/bin:/usr/bin" ]; then
-        echo "Env PATH should be /tools/bin:/bin:/usr/bin"
-        exit 1
+        error "Env PATH should be /tools/bin:/bin:/usr/bin"
+        has_errors=1
     fi
 
     if [ -z "$LFS" ]; then
-        echo "LFS env not found"
-        exit 1
+        error "LFS environment variable not set"
+        has_errors=1
     fi
 
     if [ -z "$LFS_TGT" ]; then
-        echo "LFS_TGT env not found"
-        exit 1
+        error "LFS_TGT environment variable not set"
+        has_errors=1
+    fi
+
+    if [ $has_errors -eq 1 ]; then
+        fatal "Correct errors above and retry"
     fi
 }
 
 build_toolchain()
 {
+    echo "---------------- LFS BUILD ----------------"
+    echo "Beginning process to build toolchain"
+    echo "There are $(ls toolchain | wc -l) total steps to complete"
+    echo "Sources are downloaded to $SRCDIR"
+    echo "Logs are in $LOGPATH"
+    echo "Completed steps are written to $FILE_DB"
+    echo "-------------------------------------------"
+
     for script in $(ls toolchain/)
     do
-        echo "Building $script start - $(date)"
+        info "BEGIN $script - $(zdate)"
         sh $(dirname $0)/toolchain/"$script"
         if [ $? -ne 0 ]; then
-            echo "Building $script failed.. exiting"
-            exit 1
+            fatal "Building $script failed.. exiting"
         fi
-        echo "Building $script complete - $(date)"
     done
+    info "END - $(zdate)"
 }
 
 validate_environment

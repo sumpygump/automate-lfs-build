@@ -5,6 +5,7 @@ NAME=gettext
 VERSION=${GETTEXT_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/gettext/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=9
 
 configure()
 {
@@ -22,16 +23,16 @@ build()
     cd "$BUILD_PATH"
     make "$MAKE_JOBS" -C gnulib-lib >>"$LOGFILE" 2>&1
     if [ $? -ne 0 ]; then return $?;fi
-    
+
     make -C intl pluralx.c >>"$LOGFILE" 2>&1
     if [ $? -ne 0 ]; then return $?;fi
-    
+
     make "$MAKE_JOBS" -C src msgfmt >>"$LOGFILE" 2>&1
     if [ $? -ne 0 ]; then return $?;fi
-    
+
     make "$MAKE_JOBS" -C src msgmerge >>"$LOGFILE" 2>&1
     if [ $? -ne 0 ]; then return $?;fi
-    
+
     make "$MAKE_JOBS" -C src xgettext >>"$LOGFILE" 2>&1
     if [ $? -ne 0 ]; then return $?;fi
 }

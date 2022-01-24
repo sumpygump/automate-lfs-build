@@ -5,6 +5,7 @@ NAME=dejagnu
 VERSION=${DEJAGNU_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/dejagnu/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
+SBUx10=1
 
 configure()
 {

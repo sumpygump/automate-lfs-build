@@ -1,10 +1,12 @@
 #!/bin/bash
 
 . "$(dirname "$0")"/../common/common_source
+
 NAME=binutils
 VERSION=${BINUTILS_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/binutils/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=10
 
 configure()
 {
@@ -23,9 +25,9 @@ configure()
 post_build()
 {
     {
-	case $(uname -m) in
-		x86_64) mkdir -v /tools/lib && ln -sv lib /tools/lib64 ;;
-	esac
+    case $(uname -m) in
+        x86_64) mkdir -vp /tools/lib && ln -sv lib /tools/lib64 ;;
+    esac
     } >>"$LOGFILE" 2>&1
 }
 

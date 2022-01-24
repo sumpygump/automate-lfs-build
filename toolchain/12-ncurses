@@ -5,6 +5,7 @@ NAME=ncurses
 VERSION=${NCURSES_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/ncurses/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
+SBUx10=6
 
 patchup()
 {
@@ -29,7 +30,7 @@ configure()
 
 post_install()
 {
-    ln -sv libncursesw.so /tools/lib/libncurses.so >>"$LOGFILE" 2>&1
+    ln -svf libncursesw.so /tools/lib/libncurses.so >>"$LOGFILE" 2>&1
 }
 
 . "$(dirname "$0")"/../common/common_exec

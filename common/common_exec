@@ -5,13 +5,19 @@ exec_env()
     input=$1
     case "$input" in
         fetch)
+            log "-------- BEGIN $input :: $(zdate)"
             if type fetch >/dev/null 2>&1; then
                 fetch
             else
-                [ ! -f "${SRCDIR}"/"$TARFILE" ] && default_fetch "$FETCH_URL" || return 0
+                if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
+                    default_fetch "$FETCH_URL"
+                else
+                    echo_log "Source file "${SRCDIR}"/"$TARFILE" already downloaded."
+                fi
             fi
         ;;
         extract)
+            log "-------- BEGIN $input :: $(zdate)"
             [ -d "${TMP}"/"${NAME}"-"${VERSION}" ] && rm -rf "${TMP}"/"${NAME}"-"${VERSION}"
             if type extract >/dev/null 2>&1; then
                 extract
@@ -20,86 +26,168 @@ exec_env()
             fi
         ;;
         patchup)
-            type patchup >/dev/null 2>&1 && patchup || return 0
+            if type patchup >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing patchup ..."
+                patchup
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
+            fi
+            return 0
         ;;
         pre_configure)
-            type pre_configure >/dev/null 2>&1 && pre_configure || return 0
+            if type pre_configure >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing pre_configure ..."
+                pre_configure
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
+            fi
+            return 0
         ;;
         configure)
             if type configure >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing configure ..."
                 configure
-            else
-                return 1
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
             fi
+            return 0
         ;;
         post_configure)
-            type post_configure >/dev/null 2>&1 && post_configure || return 0
+            if type post_configure >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing post_configure ..."
+                post_configure
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
+            fi
+            return 0
         ;;
         pre_build)
-            type pre_build >/dev/null 2>&1 && pre_build || return 0
+            if type pre_build >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing pre_build ..."
+                pre_build
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
+            fi
+            return 0
         ;;
         build)
+            log "-------- BEGIN $input :: $(zdate)"
+            printf "Executing build ..."
             if type build >/dev/null 2>&1; then
-               build
+                build
             else
                 cd "$BUILD_PATH"
                 make "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
             fi
+            if [ $? -ne 0 ]; then return 1; fi
+            echo "done"
         ;;
         post_build)
-            type post_build >/dev/null 2>&1 && post_build || return 0
+            if type post_build >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing post_build ..."
+                post_build
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
+            fi
+            return 0
         ;;
         pre_install)
-            type pre_install >/dev/null 2>&1 && pre_install || return 0
+            if type pre_install >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing pre_install ..."
+                pre_install
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
+            fi
+            return 0
         ;;
         build_install)
+            log "-------- BEGIN $input :: $(zdate)"
+            printf "Executing build_install ..."
             if type build_install >/dev/null 2>&1; then
                 build_install
             else
                 cd "$BUILD_PATH"
                 make "$SILENT_MAKE" "$MAKE_JOBS" install >>"$LOGFILE" 2>&1
             fi
+            if [ $? -ne 0 ]; then return 1; fi
+            echo "done"
         ;;
         post_install)
             if type post_install >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing post_install ..."
                 post_install
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
             fi
-            add_to_filedb 
+            add_to_filedb
         ;;
         test_build)
-            type test_build >/dev/null 2>&1 && test_build || return 0
+            if type test_build >/dev/null 2>&1; then
+                log "-------- BEGIN $input :: $(zdate)"
+                printf "Executing test_build ..."
+                test_build
+                if [ $? -ne 0 ]; then return 1; fi
+                echo "done"
+            fi
+            return 0
         ;;
         cleanup)
+            log "-------- BEGIN $input :: $(zdate)"
+            printf "Executing cleanup ..."
             if type cleanup >/dev/null 2>&1; then
                 cleanup
             else
                 default_cleanup "$TMP"/"$NAME"-"$VERSION"
             fi
-            NAME=
-            VERSION=
-            FETCH_URL=
-            clear_env
+            if [ $? -ne 0 ]; then return 1; fi
+            echo_log "done"
         ;;
     esac
 
     return $?
 }
 
+# Check if this build step was already complete
 if grep -w "$ME" "$FILE_DB" >/dev/null 2>&1; then
-    echo "Building $ME already complete, not doing anything.. "
+    echo "Build for $ME ($NAME $VERSION) already complete, skipping... "
     exit 0
 fi
+
+echo "Beginning build for $NAME $VERSION (SBUx10: $SBUx10)"
+print_completion_estimation $SBUx10
+
+# Track the time it takes for this build
+SECONDS=0
 
 for execution in fetch extract patchup pre_configure configure \
     post_configure pre_build build post_build pre_install build_install \
     post_install test_build cleanup
 do
-#    echo "Executing $execution"
     exec_env $execution
     if [ $? -ne 0 ]; then
-        echo "Failed executing $execution.. exiting"
+        if [ -t 1 ]; then TRED=$(tput setaf 1); TRST=$(tput sgr 0); else TRED=; TRST=; fi
+        printf "${TRED}Failed executing $execution.. exiting\n"
+        echo "Last few lines from $LOGFILE:"
+        echo "*********************************"
+        tail $LOGFILE
+        printf "*********************************$TRST\n"
         exit 1
     fi
-#    echo "Executing $execution complete"
 done
 
+SBU_RATE=$(($SECONDS*10/$SBUx10))
+
+save_rate_history
+
+echo "Finished in $SECONDS seconds (rate: $SBU_RATE sbu/s)"
+echo "-------------------------------------------"
+
+clear_env

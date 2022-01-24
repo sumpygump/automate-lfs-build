@@ -5,6 +5,7 @@ NAME=gzip
 VERSION=${GZIP_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/gzip/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=1
 
 configure()
 {

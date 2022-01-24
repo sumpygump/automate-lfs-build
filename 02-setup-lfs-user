@@ -1,66 +1,96 @@
 #!/bin/bash
 
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+. $REPO_ROOT/common/common_utils
+
+assert_is_root()
+{
+    if [ "$EUID" -ne 0 ]; then
+        fatal "Please run as root user. (Use \`sudo su - root\`)"
+    fi
+}
+
 validate_lfs_mountpoint()
 {
     if [ -z "$LFS" ]; then
-        echo "LFS env is empty.. Please export LFS environment variable"
-        exit 1
+        fatal "LFS env is empty.. Please export LFS environment variable"
     fi
 
-    if [ -z "$STRICTMOUNTPONITCHECK" ]; then
+    if [ -z "$STRICTMOUNTPOINTCHECK" ]; then
         return
     fi
-    
+
     if ! mountpoint -q "$LFS"; then
-        echo "$LFS directory is not mounted anywhere.. exiting"
-        exit 1
+        fatal "$LFS directory is not mounted anywhere.. exiting"
     fi
 }
 
 setup_lfs_user()
 {
-    echo "Setting up lfs user and group"
+    printf "Setting up lfs user and group ..."
 
     groupadd -f lfs
 
+    # Create the user
     if ! id -u lfs >/dev/null 2>&1; then
         useradd -s /bin/bash -g lfs -m -k /dev/null lfs
         echo 'lfs:lfs'| chpasswd
     fi
 
+    # Set up tools and lfs-source at LFS root
     [ ! -d "$LFS"/tools ] && mkdir -p "$LFS"/tools
     [ ! -d "$LFS"/lfs-source ] && mkdir -p "$LFS"/lfs-source
     [ ! -L /tools ] && ln -s "$LFS"/tools /
     [ ! -L /lfs-source ] && ln -s "$LFS"/lfs-source /
+    chown lfs:lfs "$LFS"
+    chown lfs:lfs -R "$LFS"/tools "$LFS"/lfs-source
+
+    # Set up link and permissions to the build repo
     [ -L /home/lfs/automate-lfs-build ] && rm /home/lfs/automate-lfs-build
+    ln -s $REPO_ROOT /home/lfs/automate-lfs-build
+    chown -h lfs:lfs /home/lfs/automate-lfs-build
+    chown lfs $REPO_ROOT
+    chmod -R a+rX $REPO_ROOT
 
-    ln -s "$LFS"/automate-lfs-build /home/lfs/automate-lfs-build
-    chown lfs "$LFS"/tools "$LFS"/lfs-source "$LFS"/automate-lfs-build
-
-    echo "Setting up lfs user and group complete"
+    echo "done"
 }
 
 setup_lfs_bash()
 {
-    echo "Setting up bash for lfs user"
+    printf "Setting up bash for lfs user ..."
+
+    # Create bash_profile
     su lfs - -c "cat > ~/.bash_profile << EOF
 exec env -i HOME=\$HOME TERM=\$TERM PS1='\u:\w\$ ' /bin/bash
 EOF"
 
+    # Create bashrc
     su lfs - -c "cat > ~/.bashrc << EOF
 set +h
 umask 022
-LFS=/mnt/lfs
+LFS=$LFS
 LC_ALL=POSIX
 LFS_TGT=$(uname -m)-lfs-linux-gnu
 PATH=/tools/bin:/bin:/usr/bin
 export LFS LC_ALL LFS_TGT PATH
 EOF"
 
-    echo "Setting up bash for lfs user complete"
+    echo "done"
 }
 
+# -----------------
+# Main
+# -----------------
+
+assert_is_root
 validate_lfs_mountpoint
+echo "---------------- LFS SETUP ----------------"
 setup_lfs_user
 setup_lfs_bash
-echo "Please login to lfs user using \"su - lfs\" and execute \"03-build-toolchain\" present inside \"~/automate-lfs-build\" directory"
+echo "-------------------------------------------"
+
+success "Next step:"
+success "  login as user lfs using \`su - lfs\`"
+success "  then \`cd ~/automate-lfs-build\`"
+success "  and execute \`./03-build-toolchain\`"
+echo

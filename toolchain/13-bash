@@ -5,6 +5,7 @@ NAME=bash
 VERSION=${BASH_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/bash/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
+SBUx10=4
 
 configure()
 {
@@ -19,7 +20,7 @@ configure()
 
 post_install()
 {
-    ln -sv bash /tools/bin/sh >>"$LOGFILE" 2>&1
+    ln -svf bash /tools/bin/sh >>"$LOGFILE" 2>&1
 }
 
 . "$(dirname "$0")"/../common/common_exec

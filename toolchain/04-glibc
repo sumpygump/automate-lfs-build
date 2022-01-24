@@ -5,6 +5,7 @@ NAME=glibc
 VERSION=${GLIBC_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/glibc/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+SBUx10=51
 
 configure()
 {
