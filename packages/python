@@ -1,24 +1,24 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=Python
 VERSION=$PYTHON_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.python.org/ftp/python/3.7.2/$TARFILE"
 FETCH_PYTHON_DOCS="https://docs.python.org/ftp/python/doc/3.7.2/python-3.7.2-docs-html.tar.bz2"
+SBUx10=10
+
+provide_source_urls()
+{
+    echo $FETCH_URL $FETCH_PYTHON_DOCS
+    return 0
+}
 
 fetch()
 {
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-
-    if [ ! -f "${SRCDIR}"/python-3.7.2-docs-html.tar.bz2 ]; then
-        echo "$FETCH_PYTHON_DOCS not available.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_PYTHON_DOCS $(basename $FETCH_PYTHON_DOCS)
 }
 
 configure()
@@ -46,4 +46,4 @@ post_install()
     } >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

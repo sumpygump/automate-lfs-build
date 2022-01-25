@@ -1,24 +1,23 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=sysvinit
 VERSION=$SYSVINIT_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://download.savannah.gnu.org/releases/sysvinit/$TARFILE"
 FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/sysvinit-2.93-consolidated-1.patch"
 
+provide_source_urls()
+{
+    echo $FETCH_URL $FETCH_PATCH
+    return 0
+}
+
 fetch()
 {
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-
-    if [ ! -f "${SRCDIR}"/sysvinit-2.93-consolidated-1.patch ]; then
-        echo "$FETCH_PATCH is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_PATCH $(basename $FETCH_PATCH)
 }
 
 patchup()
@@ -33,4 +32,4 @@ configure()
     BUILD_PATH=$(pwd)
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

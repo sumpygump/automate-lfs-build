@@ -1,31 +1,25 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=glibc
 VERSION=${GLIBC_VER}
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/glibc/$TARFILE"
-FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/glibc-2.29-fhs-1.patch"
+FETCH_PATCH="https://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.29-fhs-1.patch"
 FETCH_TZDATA="https://www.iana.org/time-zones/repository/releases/tzdata2018i.tar.gz"
+SBUx10=220
+
+provide_source_urls() {
+    echo $FETCH_URL $FETCH_PATCH $FETCH_TZDATA
+    return 0
+}
 
 fetch()
 {
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-
-    if [ ! -f "${SRCDIR}"/glibc-2.29-fhs-1.patch ]; then
-        echo "$FETCH_PATCH is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-
-    if [ ! -f "${SRCDIR}"/tzdata2018i.tar.gz ]; then
-        echo "$FETCH_TZDATA is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-    
-    return 0
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_PATCH $(basename $FETCH_PATCH)
+    warn_if_missing $FETCH_TZDATA $(basename $FETCH_TZDATA)
 }
 
 extract()
@@ -217,4 +211,4 @@ test_build()
     }  >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

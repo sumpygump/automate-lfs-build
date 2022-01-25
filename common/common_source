@@ -48,6 +48,24 @@ default_fetch()
     echo "done."
 }
 
+default_fetch_chroot()
+{
+    # wget is not available in chroot so warn if missing
+    warn_if_missing $FETCH_URL $TARFILE
+}
+
+warn_if_missing()
+{
+    local url=$1
+    local filename=$2
+
+    if [ ! -f "${SRCDIR}"/"$filename" ]; then
+        echo "Package $NAME source code is not available.. Please download it manually and place it inside /lfs-source folder"
+        echo $url
+        return 1
+    fi
+}
+
 default_configure()
 {
     cd "$1"
@@ -79,12 +97,17 @@ add_to_filedb()
 save_rate_history()
 {
     if [ "$SBU_RATE" -gt "0" ]; then
-        echo "$ME $NAME $VERSION $SBUx10 $SECONDS $SBU_RATE" >> $RATES_DB
+        printf "%-20s %-10s %-10s %4s %4s %6s\n" \
+            $ME $NAME $VERSION $SBUx10 $SECONDS $SBU_RATE >> $RATES_DB
     fi
 }
 
 print_completion_estimation()
 {
+    if [ -z "$1" ]; then
+        return 0
+    fi
+
     SBU_RATE=0
     if [ -s "$RATES_DB" ]; then
         # Calculate the average rate based on list of rates

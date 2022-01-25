@@ -1,10 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=binutils
 VERSION=${BINUTILS_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/binutils/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/binutils/$TARFILE"
+SBUx10=69
 
 configure()
 {
@@ -12,7 +14,7 @@ configure()
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
-    
+
     ../configure --prefix=/usr  \
         --enable-gold           \
         --enable-ld=default     \
@@ -35,4 +37,4 @@ build_install()
     make "$SILENT_MAKE" "$MAKE_JOBS" tooldir=/usr install >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

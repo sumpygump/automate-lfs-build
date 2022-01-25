@@ -1,10 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=bc
 VERSION=${BC_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/bc/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="http://ftp.gnu.org/gnu/bc/$TARFILE"
+SBUx10=1
 
 patchup()
 {
@@ -35,4 +37,4 @@ configure()
         --infodir=/usr/share/info >>"$LOGFILE" 2>&1 
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

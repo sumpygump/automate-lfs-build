@@ -1,16 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=elfutils
 VERSION=${ELFUTILS_VER}
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="https://sourceware.org/ftp/elfutils/0.176/$TARFILE"
-
-fetch()
-{
-    # wget is not availabe in chroot, hence prefetch it
-    :
-}
+SBUx10=13
 
 configure()
 {
@@ -31,4 +27,4 @@ build_install()
     return 0
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

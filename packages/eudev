@@ -1,25 +1,24 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=eudev
 VERSION=$EUDEV_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://dev.gentoo.org/~blueness/eudev/$TARFILE"
 FETCH_PATCH="http://anduin.linuxfromscratch.org/LFS/udev-lfs-20171102.tar.bz2"
+SBUx10=2
+
+provide_source_urls()
+{
+    echo $FETCH_URL $FETCH_PATCH
+    return 0
+}
 
 fetch()
 {
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-
-    if [ ! -f "${SRCDIR}"/udev-lfs-20171102.tar.bz2 ]; then
-        echo "$FETCH_PATCH is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_PATCH $(basename $FETCH_PATCH)
 }
 
 extract()
@@ -91,4 +90,4 @@ cleanup()
     default_cleanup "$TMP"/udev-lfs-20171102
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

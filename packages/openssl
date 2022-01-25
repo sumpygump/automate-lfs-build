@@ -1,27 +1,25 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=openssl
 VERSION=${OPENSSL_VER}
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://openssl.org/source/$TARFILE"
+SBUx10=17
 
-fetch()
+extract()
 {
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually from $FETCH_URL and place it inside /lfs-source folder"
-        return 1
-    fi
+    echo_log "not extracting"
 }
 
 configure()
 {
     cd "$TMP"/"$NAME"-"$VERSION"
-    mkdir build
+    mkdir -p build
     cd build
     BUILD_PATH=$(pwd)
-    ../config --prefix=/usr     \
+    ../config -v --prefix=/usr     \
         --openssldir=/etc/ssl   \
         --libdir=lib shared zlib-dynamic >>"$LOGFILE" 2>&1
 }
@@ -46,4 +44,4 @@ post_install()
     } >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

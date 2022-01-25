@@ -1,10 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=zlib
 VERSION=${ZLIB_VER}
-FETCH_URL="https://zlib.net/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="https://zlib.net/$TARFILE"
+SBUx10=1
 
 configure()
 {
@@ -20,5 +22,4 @@ post_install()
     } >>"$LOGFILE" 2>&1 
 }
 
-
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

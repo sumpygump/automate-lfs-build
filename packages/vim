@@ -1,19 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=vim
 VERSION=$VIM_VER
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="ftp://ftp.vim.org/pub/vim/unix/$TARFILE"
-
-fetch()
-{
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-}
+SBUx10=13
 
 extract()
 {
@@ -56,4 +49,4 @@ cleanup()
     default_cleanup "$TMP"/vim81 
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

@@ -1,19 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=check
 VERSION=$CHECK_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://github.com/libcheck/check/releases/download/0.12.0/$TARFILE"
-
-fetch()
-{
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-}
+SBUx10=1
 
 configure()
 {
@@ -25,4 +18,4 @@ post_install()
     sed -i '1 s/tools/usr/' /usr/bin/checkmk
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

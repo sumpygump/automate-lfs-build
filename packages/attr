@@ -1,19 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=attr
 VERSION=$ATTR_VER
-FETCH_URL="http://download.savannah.gnu.org/releases/attr/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
-
-fetch()
-{
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually from $FETCH_URL and place it inside /lfs-source folder"
-        return 1
-    fi
-}
+FETCH_URL="http://download.savannah.gnu.org/releases/attr/$TARFILE"
+SBUx10=1
 
 configure()
 {
@@ -31,4 +24,4 @@ post_build()
     } >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

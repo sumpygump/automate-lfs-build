@@ -1,19 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=sysklogd
 VERSION=$SYSLOGD_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://www.infodrom.org/projects/sysklogd/download/$TARFILE"
-
-fetch()
-{
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-}
+SBUx10=1
 
 patchup()
 {
@@ -49,4 +42,4 @@ user.* -/var/log/user.log
 EOF
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

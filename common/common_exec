@@ -9,6 +9,10 @@ exec_env()
             if type fetch >/dev/null 2>&1; then
                 fetch
             else
+                if [ "$IS_CHROOT" == "1" ]; then
+                    return default_fetch_chroot
+                fi
+
                 if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
                     default_fetch "$FETCH_URL"
                 else
@@ -18,7 +22,7 @@ exec_env()
         ;;
         extract)
             log "-------- BEGIN $input :: $(zdate)"
-            [ -d "${TMP}"/"${NAME}"-"${VERSION}" ] && rm -rf "${TMP}"/"${NAME}"-"${VERSION}"
+            #[ -d "${TMP}"/"${NAME}"-"${VERSION}" ] && rm -rf "${TMP}"/"${NAME}"-"${VERSION}"
             if type extract >/dev/null 2>&1; then
                 extract
             else
@@ -183,7 +187,11 @@ do
     fi
 done
 
-SBU_RATE=$(($SECONDS*10/$SBUx10))
+if [ ! -z $SBUx10 ]; then
+    SBU_RATE=$(($SECONDS*10/$SBUx10))
+else
+    SBU_RATE=0
+fi
 
 save_rate_history
 

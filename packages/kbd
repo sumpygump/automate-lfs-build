@@ -1,24 +1,24 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=kbd
 VERSION=$KBD_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/utils/kbd/$TARFILE"
 FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/kbd-2.0.4-backspace-1.patch"
+SBUx10=1
+
+provide_source_urls()
+{
+    echo $FETCH_URL $FETCH_PATCH
+    return 0
+}
 
 fetch()
 {
-    # wget is not availabe in chroot, hence prefetch it
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
-        echo "This package is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
-
-    if [ ! -f "${SRCDIR}"/kbd-2.0.4-backspace-1.patch ]; then
-        echo "$FETCH_PATCH is not availabe.. Please download it manually and place it inside /lfs-source folder"
-        return 1
-    fi
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_PATCH $(basename $FETCH_PATCH)
 }
 
 patchup()
@@ -38,4 +38,4 @@ configure()
     PKG_CONFIG_PATH=/tools/lib/pkgconfig ../configure --prefix=/usr --disable-vlock >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec
