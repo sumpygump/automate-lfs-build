@@ -162,9 +162,9 @@ EOM
 build_packages_under_chroot()
 {
     IS_CHROOT=1
-    # Move the logs from the package build step aside
-    if [ -d "$LFS/tmp/log" ] && [ ! -d "$LFS/tmp/package-log" ]; then
-        mv "$LFS/tmp/log" "$LFS/tmp/package-log"
+    # Move the logs from the toolchain build aside
+    if [ -d "$LFS/tmp/log" ] && [ ! -d "$LFS/tmp/toolchain-log" ]; then
+        mv "$LFS/tmp/log" "$LFS/tmp/toolchain-log"
     fi
 
     mount_psudoroot
@@ -175,7 +175,7 @@ build_packages_under_chroot()
     PS1='(lfs chroot) \u:\w\$ '                     \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin   \
     PACKAGES="$PACKAGES"                            \
-    /tools/bin/bash <<"EOM"
+    /tools/bin/bash --login +h <<"EOM"
     if [ -t 1 ]; then TYEL=$(tput setaf 3); TRST=$(tput sgr 0); else TYEL=; TRST=; fi
     ls -l /bin | grep sh
     cd /automate-lfs-build
@@ -184,7 +184,7 @@ build_packages_under_chroot()
         printf "${TYEL}>> BEGIN $package - $(date -uR)$TRST\n"
         /bin/bash packages/$package
         if [ $? -ne 0 ]; then
-            echo "Building $script failed.. exiting"
+            echo "Execution of $package failed."
             exit 1
         fi
     done

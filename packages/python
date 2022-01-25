@@ -33,6 +33,7 @@ post_install()
 {
     cd "$BUILD_PATH"
     {
+        cp -vf "$SRCDIR/$(basename $FETCH_PYTHON_DOCS)" "$TMP/$(basename $FETCH_PYTHON_DOCS)"
         chmod -v 755 /usr/lib/libpython3.7m.so
         chmod -v 755 /usr/lib/libpython3.so
         install -v -dm755 /usr/share/doc/python-3.7.2/html

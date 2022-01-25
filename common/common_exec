@@ -178,7 +178,7 @@ do
     exec_env $execution
     if [ $? -ne 0 ]; then
         if [ -t 1 ]; then TRED=$(tput setaf 1); TRST=$(tput sgr 0); else TRED=; TRST=; fi
-        printf "${TRED}Failed executing $execution.. exiting\n"
+        printf "${TRED}Failed executing $execution.\n"
         echo "Last few lines from $LOGFILE:"
         echo "*********************************"
         tail $LOGFILE

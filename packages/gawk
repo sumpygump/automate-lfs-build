@@ -23,8 +23,8 @@ post_install()
 {
     cd "$BUILD_PATH"
     {
-    mkdir -v /usr/share/doc/gawk-4.2.1
-    cp ../gawk-4.2.1/doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-4.2.1
+    mkdir -v /usr/share/doc/gawk-$VERSION
+    cp -v doc/gawk-$VERSION/doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-$VERSION
     } >>"$LOGFILE" 2>&1
 }
 

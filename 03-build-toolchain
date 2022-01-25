@@ -47,7 +47,7 @@ build_toolchain()
         info "BEGIN $script - $(zdate)"
         sh $(dirname $0)/toolchain/"$script"
         if [ $? -ne 0 ]; then
-            fatal "Building $script failed.. exiting"
+            fatal "Execution of $script failed."
         fi
     done
     info "END - $(zdate)"
