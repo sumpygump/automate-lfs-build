@@ -1,28 +1,29 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=dejagnu
 VERSION=${DEJAGNU_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/dejagnu/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
-mSBU=100
+FETCH_URL="http://ftp.gnu.org/gnu/dejagnu/$TARFILE"
+mSBU=50
 
 configure()
 {
-    # For some reason building of DejaGNU fails :(
-    #default_configure "$TMP"/"$NAME"-"$VERSION"
-    :
+    # Bypassing as fails due to expect failing
+    return 0
+
+    default_configure "$TMP"/"$NAME"-"$VERSION"
 }
 
 build()
 {
-    # For some reason building of DejaGNU fails :(, Hence doing nothing
-    :
+    return 0
 }
 
 build_install()
 {
-    # For some reason building of DejaGNU fails :(, Hence doing nothing
-    :
+    return 0
 }
-. "$(dirname "$0")"/../common/common_exec
+
+source "$(dirname "$0")"/../common/common_exec

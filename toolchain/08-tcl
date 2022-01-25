@@ -1,16 +1,17 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=tcl
 VERSION=${TCL_VER}
-FETCH_URL="https://downloads.sourceforge.net/tcl/$NAME$VERSION-src.tar.gz"
 TARFILE=$NAME$VERSION-src.tar.gz
+FETCH_URL="https://downloads.sourceforge.net/tcl/$TARFILE"
 mSBU=900
 
 configure()
 {
     cd "$TMP"/"${NAME}${VERSION}"
-    mkdir build
+    mkdir -p build
     cd build
 
     BUILD_PATH=$(pwd)
@@ -22,7 +23,7 @@ post_install()
     {
     chmod -v u+w /tools/lib/libtcl8.6.so
     make "$SILENT_MAKE" install-private-headers
-    ln -sv tclsh8.6 /tools/bin/tclsh
+    ln -svf tclsh8.6 /tools/bin/tclsh
     } >>"$LOGFILE" 2>&1
 }
 
@@ -31,4 +32,4 @@ cleanup()
     default_cleanup "$TMP"/"${NAME}${VERSION}"
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

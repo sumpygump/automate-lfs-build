@@ -1,13 +1,14 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=gcc
 VERSION=${GCC_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/gcc/gcc-8.2.0/$NAME-$VERSION.tar.xz"
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/gcc/gcc-8.2.0/$TARFILE"
 FETCH_MPFR="http://www.mpfr.org/mpfr-4.0.2/mpfr-${MPFR_VER}.tar.xz"
 FETCH_GMP="http://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz"
 FETCH_MPC="https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz"
-TARFILE=$NAME-$VERSION.tar.xz
 mSBU=11000
 
 fetch()
@@ -55,7 +56,6 @@ extract()
 patchup()
 {
     {
-
     cd "${TMP}"/"${NAME}"-"${VERSION}"
     mv "${TMP}"/mpfr-"${MPFR_VER}" ./mpfr &&
     mv "${TMP}"/gmp-"${GMP_VER}" ./gmp &&
@@ -80,7 +80,6 @@ patchup()
             -i.orig gcc/config/i386/t-linux64
     ;;
     esac
-
     } >>"$LOGFILE" 2>&1
 }
 
@@ -115,4 +114,4 @@ configure()
     --enable-languages=c,c++ >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

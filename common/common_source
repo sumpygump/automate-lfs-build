@@ -6,7 +6,7 @@ TMP="$LFS/tmp/build"
 LOGPATH="$LFS/tmp/log"
 LOGFILE="${LOGPATH}/${ME}.log"
 FILE_DB="${LOGPATH}/file_db.txt"
-RATES_DB="${LOGPATH}/rate_history.txt"
+RATES_DB="$LFS/tmp/rate_history.txt"
 SILENT_MAKE="-s"
 JOBS=$(($(nproc) * 4))
 MAKE_JOBS="-j$JOBS"
@@ -97,9 +97,16 @@ add_to_filedb()
 save_rate_history()
 {
     if [ "$SBU_RATE" -gt "0" ]; then
-        printf "%-20s %-12s %-10s %4s %5s %4s\n" \
+        printf "%-20s %-12s %-10s %5s %5s %4s\n" \
             $ME $NAME $VERSION $mSBU $SECONDS $SBU_RATE >> $RATES_DB
     fi
+}
+
+show_rate_history()
+{
+    printf "%-20s %-12s %-10s %5s %5s %4s\n" Script Package Version mSBU sec rate
+    printf "%-20s %-12s %-10s %5s %5s %4s\n" ------ ------- ------- ---- --- ----
+    cat $RATES_DB
 }
 
 print_completion_estimation()

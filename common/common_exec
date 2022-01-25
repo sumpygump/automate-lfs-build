@@ -86,7 +86,8 @@ exec_env()
                 build
             else
                 cd "$BUILD_PATH"
-                make "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
+                #make "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
+                make "$MAKE_JOBS" >>"$LOGFILE" 2>&1
             fi
             if [ $? -ne 0 ]; then return 1; fi
             echo "done"
@@ -187,8 +188,7 @@ do
     fi
 done
 
-if [ ! -z $mSBU ]; then
-    #SBU_RATE=$(($SECONDS*10/$mSBU))
+if [ ! -z $mSBU ] && [ ! $SECONDS -eq 0 ]; then
     SBU_RATE=$(($mSBU/$SECONDS))
 else
     SBU_RATE=0

@@ -1,10 +1,11 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=bash
 VERSION=${BASH_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/bash/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="http://ftp.gnu.org/gnu/bash/$TARFILE"
 mSBU=400
 
 configure()
@@ -23,4 +24,4 @@ post_install()
     ln -svf bash /tools/bin/sh >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

@@ -1,10 +1,11 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=glibc
 VERSION=${GLIBC_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/glibc/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/glibc/$TARFILE"
 mSBU=5100
 
 configure()
@@ -32,4 +33,4 @@ test_build()
     return 0
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

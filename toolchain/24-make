@@ -1,10 +1,11 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=make
 VERSION=${MAKE_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/make/$NAME-$VERSION.tar.bz2"
 TARFILE=$NAME-$VERSION.tar.bz2
+FETCH_URL="http://ftp.gnu.org/gnu/make/$TARFILE"
 mSBU=100
 
 patchup()
@@ -23,4 +24,4 @@ configure()
     ../configure --prefix=/tools --without-guile >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

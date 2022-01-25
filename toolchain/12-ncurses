@@ -1,10 +1,11 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=ncurses
 VERSION=${NCURSES_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/ncurses/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="http://ftp.gnu.org/gnu/ncurses/$TARFILE"
 mSBU=600
 
 patchup()
@@ -33,4 +34,4 @@ post_install()
     ln -svf libncursesw.so /tools/lib/libncurses.so >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

@@ -1,11 +1,12 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=bzip2
 VERSION=${BZIP_VER}
-FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
-mSBU=100
+FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$TARFILE"
+mSBU=70
 
 configure()
 {
@@ -19,4 +20,4 @@ build_install()
     make PREFIX=/tools "$SILENT_MAKE" "$MAKE_JOBS" install >>"$LOGFILE" 2>&1
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec

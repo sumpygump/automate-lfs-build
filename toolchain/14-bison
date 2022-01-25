@@ -1,10 +1,11 @@
 #!/bin/bash
 
-. "$(dirname "$0")"/../common/common_source
+source "$(dirname "$0")"/../common/common_source
+
 NAME=bison
 VERSION=${BISON_VER}
-FETCH_URL="http://ftp.gnu.org/gnu/bison/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/bison/$TARFILE"
 mSBU=300
 
 configure()
@@ -12,4 +13,4 @@ configure()
     default_configure "$TMP"/"$NAME"-"$VERSION"
 }
 
-. "$(dirname "$0")"/../common/common_exec
+source "$(dirname "$0")"/../common/common_exec
