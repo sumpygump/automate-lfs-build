@@ -6,7 +6,7 @@ NAME=inetutils
 VERSION=$INETUTILS_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/inetutils/$TARFILE"
-SBUx10=3
+mSBU=300
 
 patchup()
 {

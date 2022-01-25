@@ -6,7 +6,7 @@ NAME=binutils
 VERSION=${BINUTILS_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/binutils/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
-SBUx10=10
+mSBU=1000
 
 configure()
 {

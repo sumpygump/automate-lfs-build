@@ -6,7 +6,7 @@ NAME=flex
 VERSION=${FLEX_VER}
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://github.com/westes/flex/releases/download/v2.6.4/$TARFILE"
-SBUx10=4
+mSBU=400
 
 configure()
 {
@@ -21,7 +21,7 @@ configure()
 
 post_install()
 {
-    ln -sv flex /usr/bin/lex >>"$LOGFILE" 2>&1
+    ln -svf flex /usr/bin/lex >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

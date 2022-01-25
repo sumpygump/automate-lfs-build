@@ -5,7 +5,7 @@ NAME=expect
 VERSION=${EXPECT_VER}
 FETCH_URL="https://prdownloads.sourceforge.net/expect/$NAME$VERSION.tar.gz"
 TARFILE=$NAME$VERSION.tar.gz
-SBUx10=1
+mSBU=100
 
 patchup()
 {

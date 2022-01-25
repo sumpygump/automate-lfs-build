@@ -5,7 +5,7 @@ NAME=gcc
 VERSION=${GCC_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/gcc/gcc-8.2.0/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
-SBUx10=5
+mSBU=500
 
 configure()
 {

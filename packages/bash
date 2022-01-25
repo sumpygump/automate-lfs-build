@@ -6,7 +6,7 @@ NAME=bash
 VERSION=$BASH_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/bash/$TARFILE"
-SBUx10=17
+mSBU=1700
 
 configure()
 {

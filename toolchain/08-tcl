@@ -5,7 +5,7 @@ NAME=tcl
 VERSION=${TCL_VER}
 FETCH_URL="https://downloads.sourceforge.net/tcl/$NAME$VERSION-src.tar.gz"
 TARFILE=$NAME$VERSION-src.tar.gz
-SBUx10=9
+mSBU=900
 
 configure()
 {

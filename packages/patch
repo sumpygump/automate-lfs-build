@@ -6,7 +6,7 @@ NAME=patch
 VERSION=$PATCH_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/patch/$TARFILE"
-SBUx10=2
+mSBU=200
 
 configure()
 {

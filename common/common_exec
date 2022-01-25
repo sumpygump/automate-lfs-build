@@ -165,8 +165,8 @@ if grep -w "$ME" "$FILE_DB" >/dev/null 2>&1; then
     exit 0
 fi
 
-echo "Beginning build for $NAME $VERSION (SBUx10: $SBUx10)"
-print_completion_estimation $SBUx10
+echo "Beginning build for $NAME $VERSION (mSBU: $mSBU)"
+print_completion_estimation $mSBU
 
 # Track the time it takes for this build
 SECONDS=0
@@ -187,15 +187,16 @@ do
     fi
 done
 
-if [ ! -z $SBUx10 ]; then
-    SBU_RATE=$(($SECONDS*10/$SBUx10))
+if [ ! -z $mSBU ]; then
+    #SBU_RATE=$(($SECONDS*10/$mSBU))
+    SBU_RATE=$(($mSBU/$SECONDS))
 else
     SBU_RATE=0
 fi
 
 save_rate_history
 
-echo "Finished in $SECONDS seconds (rate: $SBU_RATE sbu/s)"
+echo "Finished in $SECONDS seconds (rate: $SBU_RATE mSBU/s)"
 echo "-------------------------------------------"
 
 clear_env

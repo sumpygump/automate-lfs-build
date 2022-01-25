@@ -6,7 +6,7 @@ NAME=man-db
 VERSION=$MANDB_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://download.savannah.gnu.org/releases/man-db/$TARFILE"
-SBUx10=3
+mSBU=300
 
 configure()
 {

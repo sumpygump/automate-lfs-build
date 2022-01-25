@@ -6,7 +6,7 @@ NAME=texinfo
 VERSION=$TEXINFO_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/texinfo/$TARFILE"
-SBUx10=9
+mSBU=900
 
 configure()
 {

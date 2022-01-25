@@ -7,7 +7,7 @@ VERSION=$PYTHON_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.python.org/ftp/python/3.7.2/$TARFILE"
 FETCH_PYTHON_DOCS="https://docs.python.org/ftp/python/doc/3.7.2/python-3.7.2-docs-html.tar.bz2"
-SBUx10=10
+mSBU=1000
 
 provide_source_urls()
 {
@@ -33,7 +33,8 @@ post_install()
 {
     cd "$BUILD_PATH"
     {
-        cp -vf "$SRCDIR/$(basename $FETCH_PYTHON_DOCS)" "$TMP/$(basename $FETCH_PYTHON_DOCS)"
+        local docfile=$(basename $FETCH_PYTHON_DOCS)
+        cp -vf "$SRCDIR/$docfile" "$TMP/$docfile"
         chmod -v 755 /usr/lib/libpython3.7m.so
         chmod -v 755 /usr/lib/libpython3.so
         install -v -dm755 /usr/share/doc/python-3.7.2/html
@@ -44,6 +45,8 @@ post_install()
             --no-same-permissions \
             -C /usr/share/doc/python-3.7.2/html \
             -xvf "$TMP"/python-3.7.2-docs-html.tar.bz2
+        rm "$TMP/$docfile"
+
     } >>"$LOGFILE" 2>&1
 }
 

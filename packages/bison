@@ -6,7 +6,7 @@ NAME=bison
 VERSION=$BISON_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/bison/$TARFILE"
-SBUx10=3
+mSBU=300
 
 configure()
 {

@@ -6,7 +6,7 @@ NAME=groff
 VERSION=$GROFF_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/groff/$TARFILE"
-SBUx10=4
+mSBU=400
 
 configure()
 {

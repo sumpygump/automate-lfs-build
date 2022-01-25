@@ -5,7 +5,7 @@ NAME=Python
 VERSION=${PYTHON_VER}
 FETCH_URL="https://www.python.org/ftp/python/3.7.2/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
-SBUx10=15
+mSBU=1500
 
 patchup()
 {

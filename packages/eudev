@@ -7,7 +7,7 @@ VERSION=$EUDEV_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://dev.gentoo.org/~blueness/eudev/$TARFILE"
 FETCH_PATCH="http://anduin.linuxfromscratch.org/LFS/udev-lfs-20171102.tar.bz2"
-SBUx10=2
+mSBU=200
 
 provide_source_urls()
 {

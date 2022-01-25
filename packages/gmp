@@ -6,7 +6,7 @@ NAME=gmp
 VERSION=${GMP_VER}
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gmp/$TARFILE"
-SBUx10=13
+mSBU=1300
 
 configure()
 {

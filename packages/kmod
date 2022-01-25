@@ -6,7 +6,7 @@ NAME=kmod
 VERSION=$KMOD_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/utils/kernel/kmod/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

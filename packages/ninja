@@ -6,7 +6,7 @@ NAME=ninja
 VERSION=$NINJA_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://github.com/ninja-build/ninja/archive/v1.9.0/$TARFILE"
-SBUx10=2
+mSBU=200
 
 patchup()
 {

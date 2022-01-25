@@ -6,7 +6,7 @@ NAME=busybox
 VERSION=${BUSYBOX_VER}
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="https://busybox.net/downloads/$TARFILE"
-SBUx10=12
+mSBU=1200
 
 configure()
 {

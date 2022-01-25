@@ -5,7 +5,7 @@ NAME=make
 VERSION=${MAKE_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/make/$NAME-$VERSION.tar.bz2"
 TARFILE=$NAME-$VERSION.tar.bz2
-SBUx10=1
+mSBU=100
 
 patchup()
 {

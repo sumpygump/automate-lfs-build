@@ -6,7 +6,7 @@ NAME=mpc
 VERSION=${MPC_VER}
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://ftp.gnu.org/gnu/mpc/$TARFILE"
-SBUx10=3
+mSBU=300
 
 configure()
 {

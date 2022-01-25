@@ -6,7 +6,7 @@ NAME=xz
 VERSION=$XZ_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://tukaani.org/xz/$TARFILE"
-SBUx10=2
+mSBU=200
 
 configure()
 {

@@ -5,7 +5,7 @@ NAME=findutils
 VERSION=${FINDUTILS_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/findutils/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
-SBUx10=3
+mSBU=300
 
 patchup()
 {

@@ -6,7 +6,7 @@ NAME=acl
 VERSION=$ACL_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://download.savannah.gnu.org/releases/acl/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

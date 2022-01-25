@@ -5,7 +5,7 @@ NAME=gettext
 VERSION=${GETTEXT_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/gettext/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
-SBUx10=9
+mSBU=900
 
 configure()
 {

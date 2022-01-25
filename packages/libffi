@@ -6,7 +6,7 @@ NAME=libffi
 VERSION=$LIBFFI_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="ftp://sourceware.org/pub/libffi/$TARFILE"
-SBUx10=3
+mSBU=300
 
 patchup()
 {

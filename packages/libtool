@@ -6,7 +6,7 @@ NAME=libtool
 VERSION=$LIBTOOL_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/libtool/$TARFILE"
-SBUx10=15
+mSBU=1500
 
 configure()
 {

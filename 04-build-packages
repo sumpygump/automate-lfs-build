@@ -2,7 +2,8 @@
 
 IS_CHROOT=0
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-. $REPO_ROOT/common/common_utils
+source $REPO_ROOT/common/common_utils
+source $REPO_ROOT/common/common_source
 
 if [ -z "$BIG_LINUX" ]; then
     PACKAGES="glibc flex zlib elfutils busybox openssl grub pkg-config e2fsprogs linux-kernel"
@@ -287,9 +288,12 @@ prefetch_packages()
 # Main
 # -----------------
 assert_is_root
-echo "---------------- LFS BUILD ----------------"
+echo "--------------- LFS PACKAGES --------------"
 echo "This script will create a chroot environment"
 echo "And attempt to build all packages for the LFS system"
+echo "Sources are downloaded to $SRCDIR"
+echo "Logs are in $LOGPATH"
+echo "Completed steps are written to $FILE_DB"
 echo "Package list to build:"
 printf "  %s %s %s %s %s %s %s\n" $PACKAGES
 echo "-------------------------------------------"
@@ -303,3 +307,5 @@ echo "-------------------------------------------"
 
 build_packages_under_chroot
 strip_packages
+
+echo "-------------------------------------------"

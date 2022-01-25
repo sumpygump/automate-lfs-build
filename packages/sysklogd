@@ -6,7 +6,7 @@ NAME=sysklogd
 VERSION=$SYSLOGD_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://www.infodrom.org/projects/sysklogd/download/$TARFILE"
-SBUx10=1
+mSBU=100
 
 patchup()
 {

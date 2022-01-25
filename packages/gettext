@@ -6,7 +6,7 @@ NAME=gettext
 VERSION=$GETTEXT_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gettext/$TARFILE"
-SBUx10=20
+mSBU=2000
 
 patchup()
 {

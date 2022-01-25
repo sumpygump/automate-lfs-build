@@ -5,7 +5,7 @@ NAME=perl
 VERSION=${PERL_VER}
 FETCH_URL="https://www.cpan.org/src/5.0/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
-SBUx10=16
+mSBU=1600
 
 configure()
 {

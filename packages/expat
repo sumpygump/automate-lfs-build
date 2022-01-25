@@ -7,7 +7,7 @@ VERSION=$EXPAT_VER
 TARFILE=$NAME-$VERSION.tar.bz2
 # FETCH_URL="https://prdownloads.sourceforge.net/expat/$TARFILE"
 FETCH_URL="https://prdownloads.sourceforge.net/expat/expat-2.2.6-RENAMED-VULNERABLE-PLEASE-USE-2.4.1-INSTEAD.tar.bz2"
-SBUx10=1
+mSBU=100
 
 patchup()
 {

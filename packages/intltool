@@ -6,7 +6,7 @@ NAME=intltool
 VERSION=$INTLTOOL_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://launchpad.net/intltool/trunk/0.51.0/+download/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

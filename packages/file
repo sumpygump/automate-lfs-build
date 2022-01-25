@@ -6,7 +6,7 @@ NAME=file
 VERSION=${FILE_VER}
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="ftp://ftp.astron.com/pub/file/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

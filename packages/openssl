@@ -6,7 +6,7 @@ NAME=openssl
 VERSION=${OPENSSL_VER}
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://openssl.org/source/$TARFILE"
-SBUx10=17
+mSBU=1700
 
 configure()
 {

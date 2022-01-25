@@ -97,8 +97,8 @@ add_to_filedb()
 save_rate_history()
 {
     if [ "$SBU_RATE" -gt "0" ]; then
-        printf "%-20s %-10s %-10s %4s %4s %6s\n" \
-            $ME $NAME $VERSION $SBUx10 $SECONDS $SBU_RATE >> $RATES_DB
+        printf "%-20s %-12s %-10s %4s %5s %4s\n" \
+            $ME $NAME $VERSION $mSBU $SECONDS $SBU_RATE >> $RATES_DB
     fi
 }
 
@@ -115,7 +115,8 @@ print_completion_estimation()
     fi
 
     if [ "$SBU_RATE" -gt "0" ]; then
-        est=$(($SBU_RATE*$1/10))
+        #est=$(($SBU_RATE*$1/10))
+        est=$(($1/$SBU_RATE))
         if [ "$est" -ge "60" ]; then
             est_min=$(($est/60))
             echo "Estimated completion in $est_min minutes ($est seconds)"

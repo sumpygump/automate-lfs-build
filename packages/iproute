@@ -6,7 +6,7 @@ NAME=iproute2
 VERSION=$IPROUTE_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/utils/net/iproute2/$TARFILE"
-SBUx10=2
+mSBU=200
 
 patchup()
 {

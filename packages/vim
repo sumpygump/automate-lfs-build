@@ -6,7 +6,7 @@ NAME=vim
 VERSION=$VIM_VER
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="ftp://ftp.vim.org/pub/vim/unix/$TARFILE"
-SBUx10=13
+mSBU=1300
 
 extract()
 {

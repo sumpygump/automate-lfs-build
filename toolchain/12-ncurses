@@ -5,7 +5,7 @@ NAME=ncurses
 VERSION=${NCURSES_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/ncurses/$NAME-$VERSION.tar.gz"
 TARFILE=$NAME-$VERSION.tar.gz
-SBUx10=6
+mSBU=600
 
 patchup()
 {

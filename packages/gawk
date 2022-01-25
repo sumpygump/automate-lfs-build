@@ -6,7 +6,7 @@ NAME=gawk
 VERSION=$GAWK_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gawk/$TARFILE"
-SBUx10=3
+mSBU=300
 
 patchup()
 {
@@ -23,8 +23,8 @@ post_install()
 {
     cd "$BUILD_PATH"
     {
-    mkdir -v /usr/share/doc/gawk-$VERSION
-    cp -v doc/gawk-$VERSION/doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-$VERSION
+    mkdir -vp /usr/share/doc/gawk-$VERSION
+    cp -vf ../doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-$VERSION
     } >>"$LOGFILE" 2>&1
 }
 

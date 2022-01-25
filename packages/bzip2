@@ -7,7 +7,7 @@ VERSION=$BZIP_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$TARFILE"
 FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/bzip2-1.0.6-install_docs-1.patch"
-SBUx10=1
+mSBU=100
 
 provide_source_urls()
 {
@@ -53,12 +53,12 @@ post_install()
 {
     cd "$BUILD_PATH"
     {
-        cp -v bzip2-shared /bin/bzip2
-        cp -av libbz2.so* /lib
-        ln -sv ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
+        cp -vf bzip2-shared /bin/bzip2
+        cp -avf libbz2.so* /lib
+        ln -svf ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
         rm -v /usr/bin/{bunzip2,bzcat,bzip2}
-        ln -sv bzip2 /bin/bunzip2
-        ln -sv bzip2 /bin/bzcat
+        ln -svf bzip2 /bin/bunzip2
+        ln -svf bzip2 /bin/bzcat
     } >>"$LOGFILE" 2>&1
 }
 

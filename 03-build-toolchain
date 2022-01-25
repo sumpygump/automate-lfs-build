@@ -1,8 +1,8 @@
 #!/bin/bash
 
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-. $REPO_ROOT/common/common_utils
-. $REPO_ROOT/common/common_source
+source $REPO_ROOT/common/common_utils
+source $REPO_ROOT/common/common_source
 
 if [ "$(id -u)" = 0 ]; then
     fatal "You must run script $0 as lfs user"
@@ -34,7 +34,7 @@ validate_environment()
 
 build_toolchain()
 {
-    echo "---------------- LFS BUILD ----------------"
+    echo "-------------- LFS TOOLCHAIN --------------"
     echo "Beginning process to build toolchain"
     echo "There are $(ls toolchain | wc -l) total steps to complete"
     echo "Sources are downloaded to $SRCDIR"

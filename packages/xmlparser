@@ -6,7 +6,7 @@ NAME=XML-Parser
 VERSION=$XMLPARSER_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://cpan.metacpan.org/authors/id/T/TO/TODDR/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

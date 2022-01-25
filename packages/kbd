@@ -7,7 +7,7 @@ VERSION=$KBD_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/utils/kbd/$TARFILE"
 FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/kbd-2.0.4-backspace-1.patch"
-SBUx10=1
+mSBU=100
 
 provide_source_urls()
 {

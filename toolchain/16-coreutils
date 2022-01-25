@@ -5,7 +5,7 @@ NAME=coreutils
 VERSION=${COREUTILS_VER}
 FETCH_URL="http://ftp.gnu.org/gnu/coreutils/$NAME-$VERSION.tar.xz"
 TARFILE=$NAME-$VERSION.tar.xz
-SBUx10=8
+mSBU=800
 
 configure()
 {

@@ -7,7 +7,7 @@ VERSION=$COREUTILS_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/coreutils/$TARFILE"
 FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/coreutils-8.30-i18n-1.patch"
-SBUx10=26
+mSBU=2600
 
 provide_source_urls()
 {

@@ -6,7 +6,7 @@ NAME=gperf
 VERSION=$GPERF_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/gperf/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

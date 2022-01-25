@@ -6,7 +6,7 @@ NAME=elfutils
 VERSION=${ELFUTILS_VER}
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="https://sourceware.org/ftp/elfutils/0.176/$TARFILE"
-SBUx10=13
+mSBU=1300
 
 configure()
 {

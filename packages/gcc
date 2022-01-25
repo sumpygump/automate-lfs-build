@@ -6,7 +6,7 @@ NAME=gcc
 VERSION=${GCC_VER}
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gcc/gcc-8.2.0/$TARFILE"
-SBUx10=920
+mSBU=92000
 
 patchup()
 {

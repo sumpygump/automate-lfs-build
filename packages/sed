@@ -6,7 +6,7 @@ NAME=sed
 VERSION=$SED_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/sed/$TARFILE"
-SBUx10=3
+mSBU=300
 
 patchup()
 {

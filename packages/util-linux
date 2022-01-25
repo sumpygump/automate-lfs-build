@@ -6,7 +6,7 @@ NAME=util-linux
 VERSION=$UTILLINUX_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/utils/util-linux/v2.33/$TARFILE"
-SBUx10=15
+mSBU=1500
 
 pre_configure()
 {

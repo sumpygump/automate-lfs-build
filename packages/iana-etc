@@ -6,7 +6,7 @@ NAME=iana-etc
 VERSION=$IANAETC_VER
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

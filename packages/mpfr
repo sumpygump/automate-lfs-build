@@ -6,7 +6,7 @@ NAME=mpfr
 VERSION=${MPFR_VER}
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://www.mpfr.org/mpfr-4.0.2/$TARFILE"
-SBUx10=10
+mSBU=1000
 
 configure()
 {

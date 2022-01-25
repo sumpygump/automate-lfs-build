@@ -8,7 +8,7 @@ FETCH_MPFR="http://www.mpfr.org/mpfr-4.0.2/mpfr-${MPFR_VER}.tar.xz"
 FETCH_GMP="http://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz"
 FETCH_MPC="https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz"
 TARFILE=$NAME-$VERSION.tar.xz
-SBUx10=140
+mSBU=14000
 
 fetch()
 {

@@ -6,7 +6,7 @@ NAME=readline
 VERSION=${READLINE_VER}
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/readline/$TARFILE"
-SBUx10=1
+mSBU=100
 
 patchup()
 {

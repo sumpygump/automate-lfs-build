@@ -6,7 +6,7 @@ NAME=zlib
 VERSION=${ZLIB_VER}
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://zlib.net/$TARFILE"
-SBUx10=1
+mSBU=100
 
 configure()
 {

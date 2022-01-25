@@ -6,7 +6,7 @@ NAME=perl
 VERSION=$PERL_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.cpan.org/src/5.0/$TARFILE"
-SBUx10=71
+mSBU=7100
 
 patchup()
 {

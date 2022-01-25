@@ -6,7 +6,7 @@ NAME=grub
 VERSION=$GRUB_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://ftp.gnu.org/gnu/grub/$TARFILE"
-SBUx10=6
+mSBU=600
 
 configure()
 {

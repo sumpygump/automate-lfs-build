@@ -6,7 +6,7 @@ NAME=pkg-config
 VERSION=$PKGCONFIG_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://pkg-config.freedesktop.org/releases/$TARFILE"
-SBUx10=3
+mSBU=300
 
 configure()
 {

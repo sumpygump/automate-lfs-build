@@ -6,7 +6,7 @@ NAME=linux
 VERSION=${LINUX_VER}
 TARFILE=${NAME}-${VERSION}.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/kernel/v4.x/$TARFILE"
-SBUx10=6
+mSBU=9200
 
 configure()
 {
