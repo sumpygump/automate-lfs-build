@@ -30,6 +30,7 @@ assert_has() {
     has_in_path=$(which $1 2>/dev/null)
     if [ -z "$has_in_path" ]; then
         error "$1 not found"
+        HAS_ERROR=1
         return 1
     fi
     return 0
@@ -40,7 +41,10 @@ assert_has() {
 # -----------------
 setup_terminal || echo >/dev/null
 
+HAS_ERROR=0
 export LC_ALL=C
+
+echo "------------ LFS VERSION CHECK ------------"
 
 assert_has bash && success $(bash --version | head -n1 | cut -d" " -f2-4)
 printf "Checking that /bin/sh -> bash ... "
@@ -100,6 +104,9 @@ if [ $HAS_GPP -eq 1 ]; then
     echo 'int main(){}' > dummy.c && g++ -o dummy dummy.c
     if [ -x dummy ]
         then success "g++ compilation OK";
-        else error "g++ compilation failed"; fi
+        else error "g++ compilation failed"; HAS_ERROR=1; fi
     rm -f dummy.c dummy
 fi
+
+echo "-------------------------------------------"
+exit $HAS_ERROR
