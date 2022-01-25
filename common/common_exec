@@ -22,7 +22,7 @@ exec_env()
         ;;
         extract)
             log "-------- BEGIN $input :: $(zdate)"
-            #[ -d "${TMP}"/"${NAME}"-"${VERSION}" ] && rm -rf "${TMP}"/"${NAME}"-"${VERSION}"
+            [ -d "${TMP}"/"${NAME}"-"${VERSION}" ] && rm -rf "${TMP}"/"${NAME}"-"${VERSION}"
             if type extract >/dev/null 2>&1; then
                 extract
             else

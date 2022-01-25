@@ -8,11 +8,6 @@ TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://openssl.org/source/$TARFILE"
 SBUx10=17
 
-extract()
-{
-    echo_log "not extracting"
-}
-
 configure()
 {
     cd "$TMP"/"$NAME"-"$VERSION"
