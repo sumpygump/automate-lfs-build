@@ -6,7 +6,7 @@ NAME=autoconf
 VERSION=$AUTOCONF_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/autoconf/$TARFILE"
-mSBU=100
+mSBU=60
 
 patchup()
 {

@@ -7,7 +7,7 @@ VERSION=${MANPAGES_VER}
 TARFILE=${NAME}-${VERSION}.tar.xz
 # Older versions (<5.x) are in the /Archive/ path
 FETCH_URL="https://mirrors.edge.kernel.org/pub/linux/docs/man-pages/Archive/$TARFILE"
-mSBU=100
+mSBU=30
 
 configure()
 {

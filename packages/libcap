@@ -6,7 +6,7 @@ NAME=libcap
 VERSION=$LIBCAP_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/$TARFILE"
-mSBU=100
+mSBU=50
 
 patchup()
 {

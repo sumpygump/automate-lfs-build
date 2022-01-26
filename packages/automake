@@ -6,7 +6,7 @@ NAME=automake
 VERSION=$AUTOMAKE_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/automake/$TARFILE"
-mSBU=100
+mSBU=50
 
 configure()
 {

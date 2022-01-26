@@ -6,7 +6,7 @@ NAME=less
 VERSION=$LESS_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://www.greenwoodsoftware.com/less/$TARFILE"
-mSBU=100
+mSBU=50
 
 configure()
 {

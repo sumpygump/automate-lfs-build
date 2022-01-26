@@ -2,16 +2,24 @@
 
 source "$(dirname "$0")"/../common/common_source
 
-NAME=iana-etc
-VERSION=$IANAETC_VER
+NAME=lfs-bootscripts
+VERSION=20180820
 TARFILE=$NAME-$VERSION.tar.bz2
-FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$TARFILE"
+FETCH_URL="https://linuxfromscratch.org/museum/lfs-museum/8.4/$TARFILE"
 mSBU=50
 
 configure()
 {
     cd "$TMP"/"$NAME"-"$VERSION"
     BUILD_PATH=$(pwd)
+    echo $BUILD_PATH
+    return 0
+}
+
+build()
+{
+    # do nothing for build
+    return 0
 }
 
 source "$(dirname "$0")"/../common/common_exec

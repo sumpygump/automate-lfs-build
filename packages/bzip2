@@ -7,7 +7,7 @@ VERSION=$BZIP_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$TARFILE"
 FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/bzip2-1.0.6-install_docs-1.patch"
-mSBU=100
+mSBU=30
 
 provide_source_urls()
 {
