@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# This is a utility script to safely enter chroot jail and exit when done
+
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+source $REPO_ROOT/common/common_utils
+
+assert_is_root()
+{
+    if [ "$EUID" -ne 0 ]; then
+        fatal "Please run as root user. (Use \`sudo su - root\`)"
+    fi
+
+    if [ -z "$LFS" ]; then
+        fatal "Environment variable LFS is not set!"
+    fi
+}
+
+mount_psudoroot()
+{
+    chown root:root "$LFS"
+    {
+    mount -v --bind /dev "$LFS"/dev &&
+    mount -vt devpts devpts "$LFS"/dev/pts -o gid=5,mode=620 &&
+    mount -vt proc proc "$LFS"/proc &&
+    mount -vt sysfs sysfs "$LFS"/sys &&
+    mount -vt tmpfs tmpfs "$LFS"/run
+
+    if [ -h "$LFS"/dev/shm ]; then
+        mkdir -pv "$LFS"/$(readlink "$LFS"/dev/shm)
+    fi
+    }
+}
+
+umount_psudoroot()
+{
+    printf "Unmounting ..."
+    {
+        umount -v "$LFS"/dev/pts
+        umount -v "$LFS"/dev
+        umount -v "$LFS"/run
+        umount -v "$LFS"/proc
+        umount -v "$LFS"/sys
+    }
+    chown lfs:lfs "$LFS"
+    echo "done"
+}
+
+enter_chroot()
+{
+    IS_CHROOT=1
+    mount_psudoroot
+
+    chroot "$LFS" /tools/bin/env -i                 \
+    HOME=/root                                      \
+    TERM="$TERM"                                    \
+    PS1='(lfs chroot) \u:\w\$ '                     \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin   \
+    PACKAGES="$PACKAGES"                            \
+    /tools/bin/bash --login +h
+
+    IS_CHROOT=0
+    umount_psudoroot
+}
+
+# -----------------
+# Main
+# -----------------
+assert_is_root
+echo "---------------- LFS CHROOT ---------------"
+echo "Entering chroot environment"
+echo "-------------------------------------------"
+enter_chroot
