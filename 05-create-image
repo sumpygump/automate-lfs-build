@@ -1,19 +1,23 @@
 #!/bin/bash
 
-export IMAGE_NAME="lfs.iso"
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+source $REPO_ROOT/common/common_utils
+
 export ISO_DIR="$LFS"/iso
+export IMAGE_NAME="lfs.iso"
 
 [ -z "$INITRAMFSNAME" ] && INITRAMFSNAME=initramfs-lfs-x86.cpio.gz
 
 build_initramfs()
 {
-    echo "Building initramfs..."
-    [ -f "$LFS"/boot/initramfs-lfs-x86.cpio.gz ] && rm "$LFS"/boot/initramfs-lfs-x86.cpio.gz
+    printf "Building initramfs... "
 
     if [ ! -f "$LFS"/boot/vmlinuz ]; then
-        echo "Kernel was not build.. not creating initramfs"
-        exit 1
+        echo
+        fatal "Kernel was not built... not creating initramfs"
     fi
+
+    [ -f "$LFS"/boot/initramfs-lfs-x86.cpio.gz ] && rm "$LFS"/boot/initramfs-lfs-x86.cpio.gz
 
     cd "$LFS"
     cat > init <<EOM
@@ -28,22 +32,25 @@ exec /bin/sh
 EOM
     "$LFS"/bin/chmod +x init
 
-    "$LFS"/usr/bin/find init bin dev etc lib lib64 mnt opt proc   \
-        root run sbin sys usr var                               \
-        | "$LFS"/bin/cpio -H newc -o                              \
-        | "$LFS"/bin/gzip -9 > "$LFS"/boot/"$INITRAMFSNAME"
-    echo "Building initramfs complete"
+    "$LFS"/bin/find init bin dev etc lib lib64 mnt opt proc \
+        root run sbin sys usr var \
+        | cpio -H newc -o \
+        | "$LFS"/usr/bin/gzip -9 > "$LFS"/boot/"$INITRAMFSNAME"
+
+    echo "done"
 }
 
 
 build_iso()
 {
-    {
+    printf "building iso... "
     if [ -f "$ISO_DIR"/"$IMAGE_NAME" ]; then
+        echo
         echo "iso image already present.. $ISO_DIR/$IMAGE_NAME .. exiting"
         exit 0
     fi
 
+    {
     [ -d "$ISO_DIR" ] && rm -rf "$ISO_DIR"
 
     # Create staging area
@@ -105,20 +112,23 @@ a # select the bootable partition
 w # write the partition table
 EOF
 
-    # We could have made use of dd utility but kpratx is better
+    # We could have made use of dd utility but kpartx is better
     kpartx -av "$ISO_DIR"/"$IMAGE_NAME"
     sleep 1
     dd if="$ISO_DIR"/root.part of=/dev/mapper/loop0p1 bs=4096 conv=sparse
     kpartx -dv "$ISO_DIR"/"$IMAGE_NAME"
     sleep 1
-    } >/dev/null 2>&1
+    #} >/dev/null 2>&1
+    }
+
+    echo "done"
 }
 
 write_grub()
 {
+    printf "Writing grub ..."
 
-python2.7 <<EOF
-
+    python3 <<EOF
 import os
 import sys
 
@@ -130,8 +140,8 @@ disk_img = iso_dir + "/" + img_name_env
 grub_boot = iso_dir + "/rootpath/boot/grub/i386-pc/boot.img"
 grub_core = iso_dir + "/core.img"
 
-boot = file(grub_boot, "rb").read()
-core = file(grub_core, "rb").read()
+boot = open(grub_boot, "rb").read()
+core = open(grub_core, "rb").read()
 fd = os.open(disk_img, os.O_WRONLY)
 
 os.lseek(fd, 0, os.SEEK_SET)
@@ -141,7 +151,7 @@ os.write(fd, core)
 
 os.close(fd)
 EOF
-    
+    echo "done"
 }
 
 clean_up()
@@ -150,11 +160,13 @@ clean_up()
     unset IMAGE_NAME ISO_DIR
 }
 
+echo "----------------- LFS IMAGE ---------------"
 build_initramfs
 build_iso
 write_grub
+echo "-------------------------------------------"
 
-echo "*****************************************"
+echo "*******************************************"
 echo "Your iso image is ready - $ISO_DIR/$IMAGE_NAME"
-echo "*****************************************"
+echo "*******************************************"
 clean_up
