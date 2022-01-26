@@ -8,14 +8,15 @@ source $REPO_ROOT/common/common_source
 if [ -z "$BIG_LINUX" ]; then
     PACKAGES="glibc flex zlib elfutils busybox openssl grub pkg-config e2fsprogs linux-kernel"
 else
-    PACKAGES="linux-header man-pages glibc zlib file readline m4 bc     \
-        binutils gmp mpfr mpc shadow gcc bzip2 pkg-config ncurses       \
-        attr acl libcap sed psmisc iana-etc bison flex grep bash        \
-        libtool gdbm gperf expat inetutils perl xmlparser intltool      \
-        autoconf automake xz kmod gettext elfutils libffi openssl       \
-        python ninja meson coreutils check diffutils gawk findutils     \
-        groff grub less gzip iproute kbd libpipeline make patch man-db  \
-        tar texinfo vim procps-ng util-linux e2fsprogs sysklogd sysvinit eudev linux-kernel"
+    PACKAGES="linux-header man-pages glibc zlib file readline m4 bc      \
+        binutils gmp mpfr mpc shadow gcc bzip2 pkg-config ncurses        \
+        attr acl libcap sed psmisc iana-etc bison flex grep bash         \
+        libtool gdbm gperf expat inetutils perl xmlparser intltool       \
+        autoconf automake xz kmod gettext elfutils libffi openssl        \
+        python ninja meson coreutils check diffutils gawk findutils      \
+        groff grub less gzip iproute kbd libpipeline make patch man-db   \
+        tar texinfo vim procps-ng util-linux e2fsprogs sysklogd sysvinit \
+        eudev linux-kernel lfs-bootscripts"
 fi
 
 assert_is_root()
@@ -189,7 +190,7 @@ build_packages_under_chroot()
             exit 1
         fi
     done
-    echo "END - $(date)"
+    printf "${TYEL}>> END - $(date -uR)$TRST\n"
 EOM
 
     IS_CHROOT=0
