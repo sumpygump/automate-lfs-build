@@ -10,7 +10,14 @@ mSBU=100
 
 configure()
 {
-    default_configure "$TMP"/"$NAME"-"$VERSION"
+    cd "$TMP"/"$NAME"-"$VERSION"
+    mkdir build
+    cd build
+    ../configure --prefix=/tools \
+        --disable-bzlib \
+        --disable-libseccomp \
+        --disable-xzlib \
+        --disable-zlib >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec
