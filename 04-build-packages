@@ -1,5 +1,26 @@
 #!/bin/bash
 
+#----------------------------------------------------------------------------#
+#  __    _____ _____
+# |  |  |   __|   __|
+# |  |__|   __|__   |
+# |_____|__|  |_____|
+#
+# Automate LFS Build
+#----------------------------------------------------------------------------#
+# (C) 2019-2022 Ranjith Gowda, Jansen Price
+# https://github.com/ranjithum/automate-lfs-build
+#----------------------------------------------------------------------------#
+# Usage: ./04-build-packages
+# This script will build the target packages for the lfs system. It must be run
+# as root user. It will run all the compilation in a chroot environment for
+# isolation.
+#
+# By default it will attempt to make a linux system with busybox
+# (experimental), but if the environment variable $BIG_LINUX is set it will
+# build the packages suggested by lfs.
+#----------------------------------------------------------------------------#
+
 IS_CHROOT=0
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source $REPO_ROOT/common/common_utils

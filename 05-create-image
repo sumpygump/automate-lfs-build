@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#----------------------------------------------------------------------------#
+#  __    _____ _____
+# |  |  |   __|   __|
+# |  |__|   __|__   |
+# |_____|__|  |_____|
+#
+# Automate LFS Build
+#----------------------------------------------------------------------------#
+# (C) 2019-2022 Ranjith Gowda, Jansen Price
+# https://github.com/ranjithum/automate-lfs-build
+#----------------------------------------------------------------------------#
+# Usage: ./05-create-image
+# This script will attempt to generate an iso image of the resulting linux
+# build from the previous steps. It must be run as root user.
+#----------------------------------------------------------------------------#
+
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source $REPO_ROOT/common/common_utils
 

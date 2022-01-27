@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#----------------------------------------------------------------------------#
+#  __    _____ _____
+# |  |  |   __|   __|
+# |  |__|   __|__   |
+# |_____|__|  |_____|
+#
+# Automate LFS Build
+#----------------------------------------------------------------------------#
+# (C) 2019-2022 Ranjith Gowda, Jansen Price
+# https://github.com/ranjithum/automate-lfs-build
+#----------------------------------------------------------------------------#
+# Usage: ./03-build-toolchain
+# This script must be run as the lfs user and will perform all the
+# downloading of specific versions of packages and compile the toolchain.
+#----------------------------------------------------------------------------#
+
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source $REPO_ROOT/common/common_utils
 source $REPO_ROOT/common/common_source

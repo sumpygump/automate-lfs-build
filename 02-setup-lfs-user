@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#----------------------------------------------------------------------------#
+#  __    _____ _____
+# |  |  |   __|   __|
+# |  |__|   __|__   |
+# |_____|__|  |_____|
+#
+# Automate LFS Build
+#----------------------------------------------------------------------------#
+# (C) 2019-2022 Ranjith Gowda, Jansen Price
+# https://github.com/ranjithum/automate-lfs-build
+#----------------------------------------------------------------------------#
+# Usage: ./02-setup-lfs-user
+# This script should be run as root user to create the lfs user which will be
+# used to compile the toolchain packages in the next step.
+#----------------------------------------------------------------------------#
+
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 . $REPO_ROOT/common/common_utils
 
