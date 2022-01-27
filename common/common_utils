@@ -4,6 +4,9 @@
 # Utility functions
 # -----------------
 setup_terminal() {
+    if [ "$TERM" = "alacritty" ]; then
+        export TERM="xterm-256color"
+    fi
     TPUT_RESET=""
     TPUT_RED=""
     TPUT_GREEN=""
