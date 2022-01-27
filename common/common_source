@@ -8,7 +8,7 @@ LOGFILE="${LOGPATH}/${ME}.log"
 FILE_DB="${LOGPATH}/file_db.txt"
 RATES_DB="$LFS/tmp/rate_history.txt"
 SILENT_MAKE="-s"
-JOBS=$(($(nproc) * 4))
+JOBS=${JOBS:-$(($(nproc) * 4))}
 MAKE_JOBS="-j$JOBS"
 BUILD_PATH=
 
