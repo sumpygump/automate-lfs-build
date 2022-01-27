@@ -43,7 +43,7 @@ default_fetch()
     local DEST_DIR=$SRCDIR
     log "Downloading $1"
     printf "Downloading $1 ..."
-    wget --quiet --directory-prefix="$DEST_DIR" "$1"
+    wget --quiet --directory-prefix="$DEST_DIR" "$1" 2>/dev/null
     if [ $? -ne 0 ]; then return 1; fi
     echo "done."
 }
