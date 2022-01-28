@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=diffutils
-VERSION=${DIFFUTILS_VER}
+VERSION=$DIFFUTILS_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/diffutils/$TARFILE"
 mSBU=200
 
 configure()
 {
-    default_configure "$TMP"/"$NAME"-"$VERSION"
+    default_configure "$WORKBENCH/$NAME-$VERSION"
 }
 
 source "$(dirname "$0")"/../common/common_exec

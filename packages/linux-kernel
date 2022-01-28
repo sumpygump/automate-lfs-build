@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=linux
-VERSION=${LINUX_VER}
-TARFILE=${NAME}-${VERSION}.tar.xz
+VERSION=$LINUX_VER
+TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/kernel/v4.x/$TARFILE"
 mSBU=9200
 
 configure()
 {
-    cd "${TMP}"/"${NAME}"-"${VERSION}"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
 
     make O=build x86_64_defconfig  >>"$LOGFILE" 2>&1

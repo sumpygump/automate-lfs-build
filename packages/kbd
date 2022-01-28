@@ -23,7 +23,7 @@ fetch()
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     patch -Nfp1 -i "$SRCDIR"/kbd-2.0.4-backspace-1.patch >>"$LOGFILE" 2>&1
 
     sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
@@ -32,7 +32,7 @@ patchup()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     PKG_CONFIG_PATH=/tools/lib/pkgconfig ../configure --prefix=/usr --disable-vlock >>"$LOGFILE" 2>&1

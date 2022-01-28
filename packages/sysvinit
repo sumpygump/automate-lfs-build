@@ -23,13 +23,14 @@ fetch()
 
 patchup()
 {
-    cd "${TMP}"/"${NAME}"-"${VERSION}"
-    patch -Np1 -i "${SRCDIR}"/sysvinit-2.93-consolidated-1.patch >>"$LOGFILE" 2>&1
+    cd "$WORKBENCH/$NAME-$VERSION"
+    local patch_file=$(basename $FETCH_PATCH)
+    patch -Np1 -i "$SRCDIR/$patch_file" >>"$LOGFILE" 2>&1
 }
 
 configure()
 {
-    cd "${TMP}"/"${NAME}"-"${VERSION}"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
 }
 

@@ -2,11 +2,12 @@
 
 ME=$(basename "$0")
 SRCDIR="/lfs-source"
-TMP="$LFS/tmp/build"
-LOGPATH="$LFS/tmp/log"
+TMP="$LFS/tmp"
+WORKBENCH="$TMP/build"
+LOGPATH="$TMP/log"
 LOGFILE="${LOGPATH}/${ME}.log"
 FILE_DB="${LOGPATH}/file_db.txt"
-RATES_DB="$LFS/tmp/rate_history.txt"
+RATES_DB="$TMP/rate_history.txt"
 SILENT_MAKE="-s"
 JOBS=${JOBS:-$(($(nproc) * 4))}
 MAKE_JOBS="-j$JOBS"
@@ -15,7 +16,7 @@ BUILD_PATH=
 ABS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 . $ABS_DIR/pkgversion
 
-[ ! -d "$TMP" ] && mkdir -p "$TMP"
+[ ! -d "$WORKBENCH" ] && mkdir -p "$WORKBENCH"
 [ ! -d "$LOGPATH" ] && mkdir -p "$LOGPATH"
 [ ! -d "$SRCDIR" ] && mkdir -p "$SRCDIR"
 
@@ -33,7 +34,7 @@ echo_log()
 
 default_extract()
 {
-    local EXTRACT_DIR=$TMP
+    local EXTRACT_DIR=$WORKBENCH
     echo_log "Extracting $1 to $EXTRACT_DIR/"
     tar -xf "$1" -C "$EXTRACT_DIR"
 }
@@ -60,7 +61,7 @@ warn_if_missing()
     local url=$1
     local filename=$2
 
-    if [ ! -f "${SRCDIR}"/"$filename" ]; then
+    if [ ! -f "$SRCDIR/$filename" ]; then
         echo "Package $NAME source code is not available.. Please download it manually and place it inside /lfs-source folder"
         echo $url
         return 1
@@ -125,7 +126,6 @@ print_completion_estimation()
     fi
 
     if [ "$SBU_RATE" -gt "0" ]; then
-        #est=$(($SBU_RATE*$1/10))
         est=$(($1/$SBU_RATE))
         if [ "$est" -ge "60" ]; then
             est_min=$(($est/60))

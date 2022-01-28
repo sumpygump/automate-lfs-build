@@ -10,7 +10,7 @@ mSBU=300
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     ../configure --prefix=/usr --with-internal-glib --disable-host-tool --docdir=/usr/share/doc/pkg-config-0.29.2 >>"$LOGFILE" 2>&1

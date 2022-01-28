@@ -10,7 +10,7 @@ mSBU=50
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     ../configure --prefix=/usr --bindir=/bin --disable-static --libexecdir=/usr/lib --docdir=/usr/share/doc/acl-2.2.53 >>"$LOGFILE" 2>&1

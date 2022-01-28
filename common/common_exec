@@ -14,20 +14,20 @@ exec_env()
                     return $?
                 fi
 
-                if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
+                if [ ! -f "$SRCDIR/$TARFILE" ]; then
                     default_fetch "$FETCH_URL"
                 else
-                    echo_log "Source file "${SRCDIR}"/"$TARFILE" already downloaded."
+                    echo_log "Source file "$SRCDIR/$TARFILE" already downloaded."
                 fi
             fi
         ;;
         extract)
             log "-------- BEGIN $input :: $(zdate)"
-            [ -d "${TMP}"/"${NAME}"-"${VERSION}" ] && rm -rf "${TMP}"/"${NAME}"-"${VERSION}"
+            [ -d "$WORKBENCH/$NAME-$VERSION" ] && rm -rf "$WORKBENCH/$NAME-$VERSION"
             if type extract >/dev/null 2>&1; then
                 extract
             else
-                default_extract "${SRCDIR}"/"$TARFILE"
+                default_extract "$SRCDIR/$TARFILE"
             fi
         ;;
         patchup)
@@ -87,8 +87,7 @@ exec_env()
                 build
             else
                 cd "$BUILD_PATH"
-                #make "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
-                make "$MAKE_JOBS" >>"$LOGFILE" 2>&1
+                make $SILENT_MAKE $MAKE_JOBS >>"$LOGFILE" 2>&1
             fi
             if [ $? -ne 0 ]; then return 1; fi
             echo "done"
@@ -120,7 +119,7 @@ exec_env()
                 build_install
             else
                 cd "$BUILD_PATH"
-                make "$SILENT_MAKE" "$MAKE_JOBS" install >>"$LOGFILE" 2>&1
+                make $SILENT_MAKE $MAKE_JOBS install >>"$LOGFILE" 2>&1
             fi
             if [ $? -ne 0 ]; then return 1; fi
             echo "done"
@@ -151,7 +150,7 @@ exec_env()
             if type cleanup >/dev/null 2>&1; then
                 cleanup
             else
-                default_cleanup "$TMP"/"$NAME"-"$VERSION"
+                default_cleanup "$WORKBENCH/$NAME-$VERSION"
             fi
             if [ $? -ne 0 ]; then return 1; fi
             echo_log "done"

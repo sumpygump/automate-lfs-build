@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=xz
-VERSION=${XZ_VER}
+VERSION=$XZ_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://tukaani.org/xz/$TARFILE"
 mSBU=200
 
 configure()
 {
-    default_configure "$TMP"/"$NAME"-"$VERSION"
+    default_configure "$WORKBENCH/$NAME-$VERSION"
 }
 
 source "$(dirname "$0")"/../common/common_exec

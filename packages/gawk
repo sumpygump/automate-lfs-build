@@ -10,13 +10,13 @@ mSBU=300
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i 's/extras//' Makefile.in
 }
 
 configure()
 {
-    default_configure_chroot "$TMP"/"$NAME"-"$VERSION"
+    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
 }
 
 post_install()

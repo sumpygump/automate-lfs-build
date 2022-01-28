@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=gcc
-VERSION=${GCC_VER}
+VERSION=$GCC_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gcc/gcc-8.2.0/$TARFILE"
 mSBU=9200
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     case $(uname -m) in
     x86_64)
         sed -e '/m64=/s/lib64/lib/' \
@@ -22,7 +22,7 @@ patchup()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     ../configure --prefix=/usr \

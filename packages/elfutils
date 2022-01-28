@@ -3,27 +3,27 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=elfutils
-VERSION=${ELFUTILS_VER}
+VERSION=$ELFUTILS_VER
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="https://sourceware.org/ftp/elfutils/0.176/$TARFILE"
 mSBU=1300
 
 configure()
 {
-    default_configure_chroot "$TMP"/"$NAME"-"$VERSION"
+    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
 }
 
 build()
 {
     cd "$BUILD_PATH"
-    make -ik "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
+    make -ik $SILENT_MAKE $MAKE_JOBS >>"$LOGFILE" 2>&1
     return 0
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make -ik "$SILENT_MAKE" "$MAKE_JOBS" -C libelf install >>"$LOGFILE" 2>&1
+    make -ik $SILENT_MAKE $MAKE_JOBS -C libelf install >>"$LOGFILE" 2>&1
     return 0
 }
 

@@ -10,20 +10,20 @@ mSBU=200
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i /ARPD/d Makefile; rm -f man/man8/arpd.8
     sed -i 's/.m_ipt.o//' tc/Makefile
 }
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
 }
 
 build_install()
 {
-    make "$SILENT_MAKE" "$MAKE_JOBS" DOCDIR=/usr/share/doc/iproute2-4.20.0 install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS DOCDIR=/usr/share/doc/iproute2-4.20.0 install >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

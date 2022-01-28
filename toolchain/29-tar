@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=tar
-VERSION=${TAR_VER}
+VERSION=$TAR_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/tar/$TARFILE"
 mSBU=300
 
 configure()
 {
-    default_configure "$TMP"/"$NAME"-"$VERSION"
+    default_configure "$WORKBENCH/$NAME-$VERSION"
 }
 
 source "$(dirname "$0")"/../common/common_exec

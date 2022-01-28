@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=tcl
-VERSION=${TCL_VER}
-TARFILE=$NAME$VERSION-src.tar.gz
+VERSION=$TCL_VER
+TARFILE=${NAME}${VERSION}-src.tar.gz
 FETCH_URL="https://downloads.sourceforge.net/tcl/$TARFILE"
 mSBU=900
 
 configure()
 {
-    cd "$TMP"/"${NAME}${VERSION}"
+    cd "$WORKBENCH"/"${NAME}${VERSION}"
     mkdir -p build
     cd build
 
@@ -22,14 +22,14 @@ post_install()
 {
     {
     chmod -v u+w /tools/lib/libtcl8.6.so
-    make "$SILENT_MAKE" install-private-headers
+    make $SILENT_MAKE install-private-headers
     ln -svf tclsh8.6 /tools/bin/tclsh
     } >>"$LOGFILE" 2>&1
 }
 
 cleanup()
 {
-    default_cleanup "$TMP"/"${NAME}${VERSION}"
+    default_cleanup "$WORKBENCH"/"${NAME}${VERSION}"
 }
 
 source "$(dirname "$0")"/../common/common_exec

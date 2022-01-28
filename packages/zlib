@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=zlib
-VERSION=${ZLIB_VER}
+VERSION=$ZLIB_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://zlib.net/$TARFILE"
 mSBU=50
 
 configure()
 {
-    default_configure_chroot "$TMP"/"$NAME"-"$VERSION"
+    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
 }
 
 post_install()

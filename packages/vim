@@ -10,13 +10,13 @@ mSBU=1300
 
 extract()
 {
-    [ -d "${TMP}"/vim81 ] && rm -rf "${TMP}"/vim81
-    default_extract "${SRCDIR}"/"$TARFILE"
+    [ -d "$WORKBENCH/vim81" ] && rm -rf "$WORKBENCH/vim81"
+    default_extract "$SRCDIR/$TARFILE"
 }
 
 configure()
 {
-    cd "$TMP"/vim81
+    cd "$WORKBENCH/vim81"
     BUILD_PATH=$(pwd)
     ./configure --prefix=/usr >>"$LOGFILE" 2>&1
 }
@@ -46,7 +46,7 @@ EOF
 
 cleanup()
 {
-    default_cleanup "$TMP"/vim81 
+    default_cleanup "$WORKBENCH/vim81"
 }
 
 source "$(dirname "$0")"/../common/common_exec

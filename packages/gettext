@@ -10,7 +10,7 @@ mSBU=2000
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i '/^TESTS =/d' gettext-runtime/tests/Makefile.in
     sed -i 's/test-lock..EXEEXT.//' gettext-tools/gnulib-tests/Makefile.in
     sed -e '/AppData/{N;N;p;s/\.appdata\./.metainfo./}' \
@@ -19,7 +19,7 @@ patchup()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     ../configure --prefix=/usr  --disable-static --docdir=/usr/share/doc/gettext-0.19.8.1 >>"$LOGFILE" 2>&1

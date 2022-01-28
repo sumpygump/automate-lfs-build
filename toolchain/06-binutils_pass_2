@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=binutils
-VERSION=${BINUTILS_VER}
+VERSION=$BINUTILS_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/binutils/$TARFILE"
 mSBU=1100
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
@@ -30,10 +30,10 @@ post_build()
 {
     {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" -C ld clean
+    make $SILENT_MAKE $MAKE_JOBS -C ld clean
     [ $? -ne 0 ] && return $?
     
-    make "$SILENT_MAKE" "$MAKE_JOBS" -C ld LIB_PATH=/usr/lib:/lib
+    make $SILENT_MAKE $MAKE_JOBS -C ld LIB_PATH=/usr/lib:/lib
     [ $? -ne 0 ] && return $?
     
     cp -v ld/ld-new /tools/bin

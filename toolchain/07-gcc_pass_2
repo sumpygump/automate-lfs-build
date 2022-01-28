@@ -3,32 +3,32 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=gcc
-VERSION=${GCC_VER}
+VERSION=$GCC_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gcc/gcc-8.2.0/$TARFILE"
-FETCH_MPFR="http://www.mpfr.org/mpfr-4.0.2/mpfr-${MPFR_VER}.tar.xz"
-FETCH_GMP="http://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz"
-FETCH_MPC="https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz"
+FETCH_MPFR="http://www.mpfr.org/mpfr-4.0.2/mpfr-$MPFR_VER.tar.xz"
+FETCH_GMP="http://ftp.gnu.org/gnu/gmp/gmp-$GMP_VER.tar.xz"
+FETCH_MPC="https://ftp.gnu.org/gnu/mpc/mpc-$MPC_VER.tar.gz"
 mSBU=14000
 
 fetch()
 {
-    if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then
+    if [ ! -f "$SRCDIR/$TARFILE" ]; then
         default_fetch "$FETCH_URL"
         [ $? -ne 0 ] && return $?
     fi
 
-    if [ ! -f "${SRCDIR}"/mpfr-"${MPFR_VER}".tar.xz ]; then
+    if [ ! -f "$SRCDIR/mpfr-$MPFR_VER.tar.xz" ]; then
         default_fetch "$FETCH_MPFR"
         [ $? -ne 0 ] && return $?
     fi
 
-    if [ ! -f "${SRCDIR}"/gmp-"${GMP_VER}".tar.xz ]; then
+    if [ ! -f "$SRCDIR/gmp-$GMP_VER.tar.xz" ]; then
         default_fetch "$FETCH_GMP"
         [ $? -ne 0 ] && return $?
     fi
 
-    if [ ! -f "${SRCDIR}"/mpc-"${MPC_VER}".tar.gz ]; then
+    if [ ! -f "$SRCDIR/mpc-$MPC_VER.tar.gz" ]; then
         default_fetch "$FETCH_MPC"
         [ $? -ne 0 ] && return $?
     fi
@@ -38,16 +38,16 @@ fetch()
 
 extract()
 {
-    default_extract "${SRCDIR}"/"$TARFILE"
+    default_extract "$SRCDIR/$TARFILE"
     [ $? -ne 0 ] && return $?
 
-    default_extract "${SRCDIR}"/mpfr-"${MPFR_VER}".tar.xz
+    default_extract "$SRCDIR/mpfr-$MPFR_VER.tar.xz"
     [ $? -ne 0 ] && return $?
 
-    default_extract "${SRCDIR}"/gmp-"${GMP_VER}".tar.xz
+    default_extract "$SRCDIR/gmp-$GMP_VER.tar.xz"
     [ $? -ne 0 ] && return $?
 
-    default_extract "${SRCDIR}"/mpc-"${MPC_VER}".tar.gz
+    default_extract "$SRCDIR/mpc-$MPC_VER.tar.gz"
     [ $? -ne 0 ] && return $?
 
     return 0
@@ -56,10 +56,10 @@ extract()
 patchup()
 {
     {
-    cd "${TMP}"/"${NAME}"-"${VERSION}"
-    mv "${TMP}"/mpfr-"${MPFR_VER}" ./mpfr &&
-    mv "${TMP}"/gmp-"${GMP_VER}" ./gmp &&
-    mv "${TMP}"/mpc-"${MPC_VER}" ./mpc
+    cd "$WORKBENCH/$NAME-$VERSION"
+    mv "$WORKBENCH/mpfr-$MPFR_VER" ./mpfr &&
+    mv "$WORKBENCH/gmp-$GMP_VER" ./gmp &&
+    mv "$WORKBENCH/mpc-$MPC_VER" ./mpc
 
     cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
         "$(dirname "$("$LFS_TGT"-gcc -print-libgcc-file-name)")"/include-fixed/limits.h
@@ -88,7 +88,7 @@ patchup()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
 

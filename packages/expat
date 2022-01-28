@@ -14,25 +14,25 @@ fetch()
     # Because of the vulnerability name change of this tarball, need special
     # logic to rename the downloaded file to the expected target tarfile
     local alt_filename=$(basename $FETCH_URL)
-    if [ ! -f "${SRCDIR}/$alt_filename" ]; then
+    if [ ! -f "$SRCDIR/$alt_filename" ]; then
         echo "Package $NAME source code is not available.. Please download it manually and place it inside /lfs-source folder"
         echo $FETCH_URL
         return 1
     fi
 
-    mv "${SRCDIR}/$alt_filename" "${SRCDIR}/$TARFILE"
+    mv "$SRCDIR/$alt_filename" "$SRCDIR/$TARFILE"
     return 0
 }
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i 's|usr/bin/env |bin/|' run.sh.in
 }
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     ../configure --prefix=/usr --disable-static --docdir=/usr/share/doc/expat-2.2.6 >>"$LOGFILE" 2>&1

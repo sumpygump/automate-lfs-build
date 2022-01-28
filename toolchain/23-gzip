@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=gzip
-VERSION=${GZIP_VER}
+VERSION=$GZIP_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gzip/$TARFILE"
 mSBU=100
 
 configure()
 {
-    default_configure "$TMP"/"$NAME"-"$VERSION"
+    default_configure "$WORKBENCH/$NAME-$VERSION"
 }
 
 source "$(dirname "$0")"/../common/common_exec

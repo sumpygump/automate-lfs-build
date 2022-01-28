@@ -10,20 +10,20 @@ mSBU=50
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i '/install.*STALIBNAME/d' libcap/Makefile
 }
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
 }
 
 build_install()
 {
     cd $BUILD_PATH
-    make "$SILENT_MAKE" "$MAKE_JOBS" RAISE_SETFCAP=no lib=lib prefix=/usr install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS RAISE_SETFCAP=no lib=lib prefix=/usr install >>"$LOGFILE" 2>&1
 }
 
 post_install()

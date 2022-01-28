@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=grep
-VERSION=${GREP_VER}
+VERSION=$GREP_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/grep/$TARFILE"
 mSBU=200
 
 configure()
 {
-    default_configure "$TMP"/"$NAME"-"$VERSION"
+    default_configure "$WORKBENCH/$NAME-$VERSION"
 }
 
 source "$(dirname "$0")"/../common/common_exec

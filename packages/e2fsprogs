@@ -10,7 +10,7 @@ mSBU=1600
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
@@ -24,7 +24,7 @@ configure()
 post_install()
 {
     cd $BUILD_PATH
-    make "$SILENT_MAKE" "$MAKE_JOBS" install-libs >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS install-libs >>"$LOGFILE" 2>&1
     [ $? -ne 0 ] && return 1
 
     {

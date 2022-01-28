@@ -23,7 +23,7 @@ fetch()
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     patch -Np1 -i "$SRCDIR"/bzip2-1.0.6-install_docs-1.patch >>"$LOGFILE" 2>&1
     [ $? -ne 0 ] && return 1
     sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
@@ -32,21 +32,21 @@ patchup()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
 }
 
 pre_build()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" -f Makefile-libbz2_so  >>"$LOGFILE" 2>&1
-    make "$SILENT_MAKE" "$MAKE_JOBS" clean >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS -f Makefile-libbz2_so  >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS clean >>"$LOGFILE" 2>&1
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" PREFIX=/usr install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS PREFIX=/usr install >>"$LOGFILE" 2>&1
 }
 
 post_install()

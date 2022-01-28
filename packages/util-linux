@@ -16,7 +16,7 @@ pre_configure()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
     BUILD_PATH=$(pwd)

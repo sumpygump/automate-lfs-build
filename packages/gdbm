@@ -10,7 +10,7 @@ mSBU=100
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     ../configure --prefix=/usr --disable-static --enable-libgdbm-compat >>"$LOGFILE" 2>&1

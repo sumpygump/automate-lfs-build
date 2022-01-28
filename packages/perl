@@ -10,7 +10,7 @@ mSBU=7100
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
     export BUILD_ZLIB=False
     export BUILD_BZIP2=0
@@ -18,7 +18,7 @@ patchup()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
     sh Configure \
         -des \
@@ -33,13 +33,13 @@ configure()
 build()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" -ik >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS -ik >>"$LOGFILE" 2>&1
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make -ik "$SILENT_MAKE" "$MAKE_JOBS" install >>"$LOGFILE" 2>&1
+    make -ik $SILENT_MAKE $MAKE_JOBS install >>"$LOGFILE" 2>&1
 }
 
 post_build()

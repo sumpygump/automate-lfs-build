@@ -10,7 +10,7 @@ mSBU=200
 
 configure()
 {
-    default_configure_chroot "$TMP"/"$NAME"-"$VERSION"
+    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
 }
 
 source "$(dirname "$0")"/../common/common_exec

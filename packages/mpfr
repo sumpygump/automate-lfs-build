@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=mpfr
-VERSION=${MPFR_VER}
+VERSION=$MPFR_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://www.mpfr.org/mpfr-4.0.2/$TARFILE"
 mSBU=1000
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
 
@@ -24,13 +24,13 @@ configure()
 post_build()
 {
      cd "$BUILD_PATH"
-     make "$SILENT_MAKE" "$MAKE_JOBS" html >>"$LOGFILE" 2>&1
+     make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" install-html >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS install-html >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

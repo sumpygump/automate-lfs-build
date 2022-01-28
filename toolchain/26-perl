@@ -3,14 +3,14 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=perl
-VERSION=${PERL_VER}
+VERSION=$PERL_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.cpan.org/src/5.0/$TARFILE"
 mSBU=1600
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
 
     sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth >>"$LOGFILE" 2>&1
@@ -19,10 +19,10 @@ configure()
 build()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS >>"$LOGFILE" 2>&1
     if [ $? -ne 0 ]; then
         > ext.libs
-    make "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS >>"$LOGFILE" 2>&1
     fi
 }
 

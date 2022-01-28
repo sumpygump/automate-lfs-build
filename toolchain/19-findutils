@@ -3,7 +3,7 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=findutils
-VERSION=${FINDUTILS_VER}
+VERSION=$FINDUTILS_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/findutils/$TARFILE"
 mSBU=300
@@ -11,7 +11,7 @@ mSBU=300
 patchup()
 {
     {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
     sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c
     echo "#define _IO_IN_BACKUP 0x100" >> gl/lib/stdio-impl.h
@@ -20,7 +20,7 @@ patchup()
 
 configure()
 {
-    default_configure "$TMP"/"$NAME"-"$VERSION"
+    default_configure "$WORKBENCH/$NAME-$VERSION"
 }
 
 source "$(dirname "$0")"/../common/common_exec

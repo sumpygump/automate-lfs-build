@@ -23,17 +23,17 @@ fetch()
 
 extract()
 {
-    [ -d "${TMP}"/"${NAME}"-"${VERSION}" ] && rm -rf "${TMP}"/"${NAME}"-"${VERSION}"
+    [ -d "$WORKBENCH/$NAME-$VERSION" ] && rm -rf "$WORKBENCH/$NAME-$VERSION"
 
-    default_extract "${SRCDIR}"/"$TARFILE"
+    default_extract "$SRCDIR/$TARFILE"
     if [ $? -ne 0 ]; then
-        echo "Extracting ${SRCDIR}/$TARFILE failed"
+        echo "Extracting $SRCDIR/$TARFILE failed"
         return 1
     fi
 
-    default_extract "${SRCDIR}"/udev-lfs-20171102.tar.bz2
+    default_extract "$SRCDIR/udev-lfs-20171102.tar.bz2"
     if [ $? -ne 0 ]; then
-        echo "Extracting ${SRCDIR}/udev-lfs-20171102.tar.bz2 failed"
+        echo "Extracting $SRCDIR/udev-lfs-20171102.tar.bz2 failed"
         return 1
     fi
     return 0
@@ -41,7 +41,7 @@ extract()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
@@ -67,27 +67,27 @@ EOF
 build()
 {
     cd "$BUILD_PATH"
-    LIBRARY_PATH=/tools/lib make "$SILENT_MAKE" "$MAKE_JOBS" >>"$LOGFILE" 2>&1
+    LIBRARY_PATH=/tools/lib make $SILENT_MAKE $MAKE_JOBS >>"$LOGFILE" 2>&1
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make LD_LIBRARY_PATH=/tools/lib "$SILENT_MAKE" "$MAKE_JOBS" install >>"$LOGFILE" 2>&1
+    make LD_LIBRARY_PATH=/tools/lib $SILENT_MAKE $MAKE_JOBS install >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
-    cd "${TMP}"
-    make "$SILENT_MAKE" "$MAKE_JOBS" -f udev-lfs-20171102/Makefile.lfs install >>"$LOGFILE" 2>&1
+    cd "$WORKBENCH"
+    make $SILENT_MAKE $MAKE_JOBS -f udev-lfs-20171102/Makefile.lfs install >>"$LOGFILE" 2>&1
     [ $? -ne 0 ] && return 1
     LD_LIBRARY_PATH=/tools/lib udevadm hwdb --update
 }
 
 cleanup()
 {
-    default_cleanup "$TMP"/"$NAME"-"$VERSION"
-    default_cleanup "$TMP"/udev-lfs-20171102
+    default_cleanup "$WORKBENCH/$NAME-$VERSION"
+    default_cleanup "$WORKBENCH"/udev-lfs-20171102
 }
 
 source "$(dirname "$0")"/../common/common_exec

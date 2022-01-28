@@ -3,21 +3,21 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=readline
-VERSION=${READLINE_VER}
+VERSION=$READLINE_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/readline/$TARFILE"
 mSBU=100
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i '/MV.*old/d' Makefile.in
     sed -i '/{OLDSUFF}/c:' support/shlib-install
 }
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
@@ -29,13 +29,13 @@ configure()
 build()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" SHLIB_LIBS="-L/tools/lib -lncursesw" >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS SHLIB_LIBS="-L/tools/lib -lncursesw" >>"$LOGFILE" 2>&1
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" SHLIB_LIBS="-L/tools/lib -lncursesw" install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS SHLIB_LIBS="-L/tools/lib -lncursesw" install >>"$LOGFILE" 2>&1
 }
 
 post_install()

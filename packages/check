@@ -10,7 +10,7 @@ mSBU=50
 
 configure()
 {
-    default_configure_chroot "$TMP"/"$NAME"-"$VERSION"
+    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
 }
 
 post_install()

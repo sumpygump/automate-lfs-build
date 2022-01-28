@@ -3,7 +3,7 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=glibc
-VERSION=${GLIBC_VER}
+VERSION=$GLIBC_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/glibc/$TARFILE"
 FETCH_PATCH="https://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.29-fhs-1.patch"
@@ -24,18 +24,20 @@ fetch()
 
 extract()
 {
-    default_extract "${SRCDIR}"/"$TARFILE"
+    default_extract "$SRCDIR/$TARFILE"
     [ $? -ne 0 ] && return $?
 
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir tzdata
-    tar -xf "${SRCDIR}"/tzdata2018i.tar.gz -C tzdata
+    local tztarfile=$(basename $FETCH_TZDATA)
+    tar -xf "$SRCDIR/$tztarfile" -C tzdata
 }
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
-    patch -Np1 -i "${SRCDIR}"/glibc-2.29-fhs-1.patch >>"$LOGFILE" 2>&1
+    cd "$WORKBENCH/$NAME-$VERSION"
+    local patch_file=$(basename $FETCH_PATCH)
+    patch -Np1 -i "$SRCDIR/$patch_file" >>"$LOGFILE" 2>&1
 }
 
 pre_configure()
@@ -59,7 +61,7 @@ pre_configure()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
@@ -83,12 +85,12 @@ post_build()
 build_install()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" -ik install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS -ik install >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     {
     cp -v ./nscd/nscd.conf /etc/nscd.conf
     mkdir -pv /var/cache/nscd
@@ -120,7 +122,7 @@ post_install()
     localedef -i zh_CN -f GB18030 zh_CN.GB18030 &&
     localedef -i zh_HK -f BIG5-HKSCS zh_HK.BIG5-HKSCS
 
-    make "$SILENT_MAKE" "$MAKE_JOBS" -ik localedata/install-locales
+    make $SILENT_MAKE $MAKE_JOBS -ik localedata/install-locales
 
     cat > /etc/nsswitch.conf << "EOF"
     # Begin /etc/nsswitch.conf
@@ -146,9 +148,9 @@ EOF
     for tz in etcetera southamerica northamerica europe africa antarctica  \
         asia australasia backward pacificnew systemv
     do
-        zic -L /dev/null   -d $ZONEINFO       ${tz}
-        zic -L /dev/null   -d $ZONEINFO/posix ${tz}
-        zic -L leapseconds -d $ZONEINFO/right ${tz}
+        zic -L /dev/null   -d $ZONEINFO       $tz
+        zic -L /dev/null   -d $ZONEINFO/posix $tz
+        zic -L leapseconds -d $ZONEINFO/right $tz
     done
 
     cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO &&

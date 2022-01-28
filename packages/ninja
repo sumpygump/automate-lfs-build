@@ -10,7 +10,7 @@ mSBU=200
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i '/int Guess/a \
         int   j = 0;\
         char* jobs = getenv( "NINJAJOBS" );\
@@ -21,7 +21,7 @@ patchup()
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
     python3 configure.py --bootstrap >>"$LOGFILE" 2>&1
 }

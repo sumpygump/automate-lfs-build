@@ -3,20 +3,20 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=make
-VERSION=${MAKE_VER}
+VERSION=$MAKE_VER
 TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="http://ftp.gnu.org/gnu/make/$TARFILE"
 mSBU=100
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
 }
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
     BUILD_PATH=$(pwd)

@@ -3,21 +3,21 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=expect
-VERSION=${EXPECT_VER}
-TARFILE=$NAME$VERSION.tar.gz
+VERSION=$EXPECT_VER
+TARFILE=${NAME}${VERSION}.tar.gz
 FETCH_URL="https://prdownloads.sourceforge.net/expect/$TARFILE"
 mSBU=100
 
 patchup()
 {
-    cd "$TMP"/"${NAME}${VERSION}"
+    cd "$WORKBENCH"/"${NAME}${VERSION}"
     cp -v configure{,.orig} >>"$LOGFILE" 2>&1
     sed 's:/usr/local/bin:/bin:' configure.orig > configure
 }
 
 configure()
 {
-    cd "$TMP"/"${NAME}${VERSION}"
+    cd "$WORKBENCH"/"${NAME}${VERSION}"
     BUILD_PATH=$(pwd)
     ./configure --prefix=/tools \
         --with-tcl=/tools/lib \
@@ -40,7 +40,7 @@ build_install()
 
 cleanup()
 {
-    default_cleanup "$TMP"/"${NAME}${VERSION}"
+    default_cleanup "$WORKBENCH"/"${NAME}${VERSION}"
 }
 
 source "$(dirname "$0")"/../common/common_exec

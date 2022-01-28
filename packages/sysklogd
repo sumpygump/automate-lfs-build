@@ -10,21 +10,21 @@ mSBU=50
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c
     sed -i 's/union wait/int/' syslogd.c
 }
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" BINDIR=/sbin install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS BINDIR=/sbin install >>"$LOGFILE" 2>&1
 }
 
 post_install()

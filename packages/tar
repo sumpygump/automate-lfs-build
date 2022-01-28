@@ -10,13 +10,13 @@ mSBU=1700
 
 patchup()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     sed -i 's/abort.*/FALLTHROUGH;/' src/extract.c
 }
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     FORCE_UNSAFE_CONFIGURE=1 ../configure --prefix=/usr --bindir=/bin  >>"$LOGFILE" 2>&1
@@ -25,7 +25,7 @@ configure()
 post_install()
 {
     cd "$BUILD_PATH"
-    make "$SILENT_MAKE" "$MAKE_JOBS" -C doc install-html docdir=/usr/share/doc/tar-1.31 >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS -C doc install-html docdir=/usr/share/doc/tar-1.31 >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

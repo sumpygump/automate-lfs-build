@@ -10,7 +10,7 @@ mSBU=200
 
 configure()
 {
-    cd "$TMP"/"$NAME"-"$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build; cd build; BUILD_PATH=$(pwd)
 
     ../configure --prefix=/usr --disable-static --docdir=/usr/share/doc/xz-5.2.4 >>"$LOGFILE" 2>&1
