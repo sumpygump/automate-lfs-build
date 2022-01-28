@@ -9,6 +9,21 @@ TARFILE=$NAME-$VERSION.tar.bz2
 FETCH_URL="https://prdownloads.sourceforge.net/expat/expat-2.2.6-RENAMED-VULNERABLE-PLEASE-USE-2.4.1-INSTEAD.tar.bz2"
 mSBU=100
 
+fetch()
+{
+    # Because of the vulnerability name change of this tarball, need special
+    # logic to rename the downloaded file to the expected target tarfile
+    local alt_filename=$(basename $FETCH_URL)
+    if [ ! -f "${SRCDIR}/$alt_filename" ]; then
+        echo "Package $NAME source code is not available.. Please download it manually and place it inside /lfs-source folder"
+        echo $FETCH_URL
+        return 1
+    fi
+
+    mv "${SRCDIR}/$alt_filename" "${SRCDIR}/$TARFILE"
+    return 0
+}
+
 patchup()
 {
     cd "$TMP"/"$NAME"-"$VERSION"

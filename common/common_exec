@@ -10,7 +10,8 @@ exec_env()
                 fetch
             else
                 if [ "$IS_CHROOT" == "1" ]; then
-                    return default_fetch_chroot
+                    default_fetch_chroot
+                    return $?
                 fi
 
                 if [ ! -f "${SRCDIR}"/"$TARFILE" ]; then

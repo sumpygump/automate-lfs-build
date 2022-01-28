@@ -52,6 +52,7 @@ default_fetch_chroot()
 {
     # wget is not available in chroot so warn if missing
     warn_if_missing $FETCH_URL $TARFILE
+    return $?
 }
 
 warn_if_missing()
@@ -64,6 +65,8 @@ warn_if_missing()
         echo $url
         return 1
     fi
+
+    return 0
 }
 
 default_configure()
