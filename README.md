@@ -11,6 +11,38 @@ Install the basic required packages in a debian based distribution using the fol
 
 `$ apt install build-essential bison texinfo gawk git python2.7 kpartx -y`
 
+### Recommended partition set up
+
+To create the LFS system it is best to set it up on a hard drive partitioned as with at least four partitions as described below. You can create a virtual hard drive in virtualbox (recommended 20GB) and attaching it to your VM.
+
+Assuming the drive for installing LFS is recognized by your linux machine as `/dev/sdb` for the purposes of the following scripts to partition and mount it.
+
+```
+sudo parted --script /dev/sdb mklabel gpt \
+    mkpart primary 1MiB 100MiB \
+    mkpart primary 100MiB 525MiB \
+    mkpart primary 525MiB 19.3GB \
+    mkpart primary 19.3GB 100%
+sudo parted --script /dev/sdb set 1 bios_grub on
+sudo mkfs.vfat /dev/sdb1
+sudo mkfs.ext4 /dev/sdb2
+sudo mkfs.ext4 /dev/sdb3
+sudo mkswap /dev/sdb4
+sudo tune2fs -c 1 -L LFSBOOT /dev/sdb2
+sudo tune2fs -c 1 -L LFSROOT /dev/sdb3
+```
+
+Now to mount the drive at our LFS root and boot partitions:
+
+```
+sudo mkdir /mnt/lfs2
+sudo export LFS=/mnt/lfs2
+sudo mount -t ext4 -L LFSROOT $LFS
+sudo mkdir -v $LFS/boot
+sudo mount -t ext4 -L LFSBOOT $LFS/boot
+sudo swapon -v /dev/sdb4
+```
+
 ### Scripts
 
 Scripts must be executed in the same order as shown below
