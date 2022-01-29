@@ -161,7 +161,7 @@ exec_env()
 }
 
 # Check if this build step was already complete
-if grep -w "$ME" "$FILE_DB" >/dev/null 2>&1; then
+if grep -w "^$ME" "$FILE_DB" >/dev/null 2>&1; then
     echo "Build for $ME ($NAME $VERSION) already complete, skipping... "
     exit 0
 fi

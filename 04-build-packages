@@ -183,11 +183,6 @@ EOM
 
 build_packages_under_chroot()
 {
-    # Move the logs from the toolchain build aside
-    if [ -d "$LFS/tmp/log" ] && [ ! -d "$LFS/tmp/toolchain-log" ]; then
-        mv "$LFS/tmp/log" "$LFS/tmp/toolchain-log"
-    fi
-
     mount_psudoroot
 
     chroot "$LFS" /tools/bin/env -i                 \
