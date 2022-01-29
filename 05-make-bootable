@@ -1,0 +1,76 @@
+#!/bin/bash
+
+#----------------------------------------------------------------------------#
+#  __    _____ _____
+# |  |  |   __|   __|
+# |  |__|   __|__   |
+# |_____|__|  |_____|
+#
+# Automate LFS Build
+#----------------------------------------------------------------------------#
+# (C) 2019-2022 Ranjith Gowda, Jansen Price
+# https://github.com/ranjithum/automate-lfs-build
+#----------------------------------------------------------------------------#
+# Usage: ./051-make-bootable
+# This script provides some assistance in completing the items in chapters 7
+# and 8 of the LFS book (version 8.4)
+#----------------------------------------------------------------------------#
+
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+source $REPO_ROOT/common/common_utils
+source $REPO_ROOT/common/common_chrooted
+
+make_bootable_as_chroot()
+{
+    mount_psudoroot
+
+    # Detect where the lfs drive is mounted
+    lfs_partition=$(df | grep "$LFS" | head -1 | awk '{print $1}')
+    if [ -z "$lfs_partition" ]; then
+        echo "Cannot detect drive mounted for LFS"
+    fi
+    lfs_drive=${lfs_partition:0:8}
+
+    chroot "$LFS" /tools/bin/env -i                 \
+    HOME=/root                                      \
+    TERM="$TERM"                                    \
+    PS1='(lfs chroot) \u:\w\$ '                     \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin   \
+    IS_CHROOT="1"                                   \
+    LFS_DRIVE="$lfs_drive"                          \
+    /tools/bin/bash --login +h <<"EOM"
+    if [ ! -d "/automate-lfs-build" ]; then
+        echo "Cannot read automate-lfs-build dir"
+    fi
+    source /automate-lfs-build/common/common_chrooted
+    hr
+    create_custom_udev_rules && hr
+    create_nic_files && hr
+    create_resolv_file && hr
+    configure_system_hostname && hr
+    configure_sysvinit && hr
+    configure_system_clock && hr
+    info "If you need a specific keyboard config,"
+    info "see section 7.6.5 Configuring the Linux Console" && hr
+    create_bash_shell_startup_script && hr
+    create_inputrc_file && hr
+    create_shells_file && hr
+    create_fstab_file && hr
+    setup_grub && hr
+    info "END - $(date -uR)"
+EOM
+
+    unset $IS_CHROOT
+    umount_psudoroot
+}
+
+main()
+{
+    assert_is_root
+    echo "---------------- LFS CHROOT ---------------"
+    echo "Entering chroot environment"
+    echo "-------------------------------------------"
+    make_bootable_as_chroot
+}
+
+main

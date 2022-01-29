@@ -1,0 +1,342 @@
+#!/bin/bash
+
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+IS_IN_COMMON=$(echo $REPO_ROOT | grep common)
+if [ -z "$IS_IN_COMMON" ]; then
+    source $REPO_ROOT/common/common_utils
+else
+    source $REPO_ROOT/common_utils
+fi
+
+assert_is_root()
+{
+    if [ "$EUID" -ne 0 ]; then
+        fatal "Please run as root user. (Use \`sudo su - root\`)"
+    fi
+
+    if [ -z "$LFS" ]; then
+        fatal "Environment variable LFS is not set!"
+    fi
+}
+
+mount_psudoroot()
+{
+    chown root:root "$LFS"
+    {
+    mount -v --bind /dev "$LFS"/dev &&
+    mount -vt devpts devpts "$LFS"/dev/pts -o gid=5,mode=620 &&
+    mount -vt proc proc "$LFS"/proc &&
+    mount -vt sysfs sysfs "$LFS"/sys &&
+    mount -vt tmpfs tmpfs "$LFS"/run
+
+    if [ -h "$LFS"/dev/shm ]; then
+        mkdir -pv "$LFS"/$(readlink "$LFS"/dev/shm)
+    fi
+    }
+}
+
+umount_psudoroot()
+{
+    printf "Unmounting ..."
+    {
+        umount -v "$LFS"/dev/pts
+        umount -v "$LFS"/dev
+        umount -v "$LFS"/run
+        umount -v "$LFS"/proc
+        umount -v "$LFS"/sys
+    }
+    chown lfs:lfs "$LFS"
+}
+
+enter_chroot()
+{
+    IS_CHROOT=1
+    mount_psudoroot
+
+    chroot "$LFS" /tools/bin/env -i                 \
+    HOME=/root                                      \
+    TERM="$TERM"                                    \
+    PS1='(lfs chroot) \u:\w\$ '                     \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin   \
+    PACKAGES="$PACKAGES"                            \
+    IS_CHROOT="1"                                   \
+    /tools/bin/bash --login +h
+
+    IS_CHROOT=0
+    umount_psudoroot
+}
+
+assert_in_chroot()
+{
+    if [ -z "$IS_CHROOT" ]; then
+        echo
+        echo "Not detected as being in chroot jail"
+        return 1
+    fi
+}
+
+hr()
+{
+    echo "-------------------------------------------"
+}
+
+# ONLY IN CHROOT
+create_custom_udev_rules()
+{
+    # From 7.4.1.2
+    echo "Creating custom udev rules ..."
+    assert_in_chroot
+
+    bash /lib/udev/init-net-rules.sh
+    echo "Contents of /etc/udev/rules.d/70-persistent-net.rules:"
+    info $(cat /etc/udev/rules.d/70-persistent-net.rules | grep 'NAME="')
+}
+
+create_nic_files()
+{
+    # From 7.5.1
+    echo "Creating network interface configuration files ..."
+    assert_in_chroot
+
+    cd /etc/sysconfig/
+    cat > ifconfig.enp0s3 << "EOF"
+ONBOOT=yes
+IFACE=enp0s3
+SERVICE=ipv4-static
+IP=192.168.1.2
+GATEWAY=192.168.1.1
+PREFIX=24
+BROADCAST=192.168.1.255
+EOF
+    info "Review the file /etc/sysconfig/ifconfig.enp0s3 and confirm is correct"
+}
+
+create_resolv_file()
+{
+    # From 7.5.2
+    echo "Creating the /etc/resolve.conf file ..."
+    assert_in_chroot
+
+    cat > /etc/resolv.conf << "EOF"
+# Begin /etc/resolv.conf
+
+domain lfs.lvh.me
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+
+# End /etc/resolv.conf
+EOF
+    info "Review the file /etc/resolv/conf and confirm is correct"
+}
+
+configure_system_hostname()
+{
+    # From 7.5.3
+    echo "Configuring the system hostname ..."
+    assert_in_chroot
+
+    echo "<lfs>" > /etc/hostname
+
+    info "Created file /etc/hostname"
+}
+
+configure_sysvinit()
+{
+    # From 7.6.2
+    echo "Configuring sysvinit ..."
+    assert_in_chroot
+
+    cat > /etc/inittab << "EOF"
+# Begin /etc/inittab
+
+id:3:initdefault:
+
+si::sysinit:/etc/rc.d/init.d/rc S
+
+l0:0:wait:/etc/rc.d/init.d/rc 0
+l1:S1:wait:/etc/rc.d/init.d/rc 1
+l2:2:wait:/etc/rc.d/init.d/rc 2
+l3:3:wait:/etc/rc.d/init.d/rc 3
+l4:4:wait:/etc/rc.d/init.d/rc 4
+l5:5:wait:/etc/rc.d/init.d/rc 5
+l6:6:wait:/etc/rc.d/init.d/rc 6
+
+ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
+
+su:S016:once:/sbin/sulogin
+
+1:2345:respawn:/sbin/agetty --noclear tty1 9600
+2:2345:respawn:/sbin/agetty tty2 9600
+3:2345:respawn:/sbin/agetty tty3 9600
+4:2345:respawn:/sbin/agetty tty4 9600
+5:2345:respawn:/sbin/agetty tty5 9600
+6:2345:respawn:/sbin/agetty tty6 9600
+
+# End /etc/inittab
+EOF
+    info "Created file /etc/inittab"
+}
+
+configure_system_clock()
+{
+    # From 7.6.4
+    echo "Configuring the system hostname ..."
+    assert_in_chroot
+
+    cat > /etc/sysconfig/clock << "EOF"
+# Begin /etc/sysconfig/clock
+
+UTC=1
+
+# Set this to any options you might need to give to hwclock,
+# such as machine hardware clock type for Alphas.
+CLOCKPARAMS=
+
+# End /etc/sysconfig/clock
+EOF
+
+    info "Created file /etc/systconfig/clock"
+}
+
+create_bash_shell_startup_script()
+{
+    # From 7.7
+    echo "Creating bash shell startup script ..."
+    assert_in_chroot
+
+    cat > /etc/profile << "EOF"
+# Begin /etc/profile
+
+export LANG=en_US.UTF-8
+
+# End /etc/profile
+EOF
+
+    info "Created file /etc/profile"
+}
+
+create_inputrc_file()
+{
+    # From 7.8
+    echo "Creating inputrc file..."
+    assert_in_chroot
+
+    cat > /etc/inputrc << "EOF"
+# Begin /etc/inputrc
+# Modified by Chris Lynn <roryo@roryo.dynup.net>
+
+# Allow the command prompt to wrap to the next line
+set horizontal-scroll-mode Off
+
+# Enable 8bit input
+set meta-flag On
+set input-meta On
+
+# Turns off 8th bit stripping
+set convert-meta Off
+
+# Keep the 8th bit for display
+set output-meta On
+
+# none, visible or audible
+set bell-style none
+
+# All of the following map the escape sequence of the value
+# contained in the 1st argument to the readline specific functions
+"\eOd": backward-word
+"\eOc": forward-word
+
+# for linux console
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+"\e[5~": beginning-of-history
+"\e[6~": end-of-history
+"\e[3~": delete-char
+"\e[2~": quoted-insert
+
+# for xterm
+"\eOH": beginning-of-line
+"\eOF": end-of-line
+
+# for Konsole
+"\e[H": beginning-of-line
+"\e[F": end-of-line
+
+# End /etc/inputrc
+EOF
+
+    info "Created file /etc/inputrc"
+}
+
+create_shells_file()
+{
+    # From 7.9
+    echo "Creating shells file..."
+    assert_in_chroot
+
+    cat > /etc/shells << "EOF"
+# Begin /etc/shells
+
+/bin/sh
+/bin/bash
+
+# End /etc/shells
+EOF
+
+    info "Created file /etc/shells"
+}
+
+create_fstab_file()
+{
+    # From 8.2
+    echo "Creating fstab file..."
+    assert_in_chroot
+
+    cat > /etc/fstab << "EOF"
+# Begin /etc/fstab
+
+# file system  mount-point  type     options             dump  fsck
+#                                                              order
+/dev/sda3      /            ext4     defaults            1     1
+/dev/sda4      swap         swap     pri=1               0     0
+/dev/sda2      /boot        ext4     defaults            1     1
+proc           /proc        proc     nosuid,noexec,nodev 0     0
+sysfs          /sys         sysfs    nosuid,noexec,nodev 0     0
+devpts         /dev/pts     devpts   gid=5,mode=620      0     0
+tmpfs          /run         tmpfs    defaults            0     0
+devtmpfs       /dev         devtmpfs mode=0755,nosuid    0     0
+
+# End /etc/fstab
+EOF
+
+    info "Created file /etc/fstab; Review for accuracy"
+}
+
+setup_grub()
+{
+    # From 8.2
+    echo "Creating grub entry..."
+    assert_in_chroot
+
+    if [ -z "$LFS_DRIVE" ]; then
+        error "Not sure which drive to add grub to; aborting."
+        return 1
+    fi
+
+    LINUX_VERSION="4.20.12-lfs-8.4"
+
+    grub-install --target i386-pc $LFS_DRIVE
+
+    cat > /boot/grub/grub.cfg << "EOF"
+# Begin /boot/grub/grub.cfg
+set default=0
+set timeout=5
+
+insmod ext2 biosdisk
+set root=(hd0,2)
+
+menuentry "GNU/Linux, Linux $LINUX_VERSION" {
+        linux   /boot/vmlinuz-$LINUX_VERSION root=/dev/sda2 ro
+}
+EOF
+}

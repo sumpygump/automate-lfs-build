@@ -35,10 +35,10 @@ sudo tune2fs -c 1 -L LFSROOT /dev/sdb3
 Now to mount the drive at our LFS root and boot partitions:
 
 ```
-sudo mkdir /mnt/lfs2
-sudo export LFS=/mnt/lfs2
+export LFS=/mnt/lfs2
+sudo mkdir -vp /mnt/lfs2
 sudo mount -t ext4 -L LFSROOT $LFS
-sudo mkdir -v $LFS/boot
+sudo mkdir -vp $LFS/boot
 sudo mount -t ext4 -L LFSBOOT $LFS/boot
 sudo swapon -v /dev/sdb4
 ```
@@ -57,9 +57,12 @@ Scripts must be executed in the same order as shown below
     - This script is responsible for setting up toolchain, must be executed with lfs user permission.
 
 * 04-build-packages
-    - This script is responsible for building minimum linux with busybox
+    - This script is responsible for building minimum linux packages
 
-* 05-create-image
+* 05-make-bootable
+    - This script is responsible for setting up some default configs and making grub MBR
+
+* 06-create-image
     - This is optional script for creating an ISO image.
 
 
@@ -70,18 +73,21 @@ Scripts must be executed in the same order as shown below
 * iso image has been tested with qemu using below command\
 `$ qemu-system-x86_64 -drive format=raw,file=$LFS/iso/lfs.iso -nographic -enable-kvm -m 512M`
 
-* Below procedure should work seemlessly, considering LFS env has been set
+* Below procedure should work seamlessly, considering LFS env has been set
+
 ```
-$ mkdir -p $LFS/automate-lfs-build
-$ git clone https://github.com/ranjithum/automate-lfs-build $LFS/automate-lfs-build
-$ cd $LFS/automate-lfs-build
-$ mkdir -p $LFS/lfs-source; wget --input-file=./lfs-packages.txt --continue --directory-prefix=$LFS/lfs-source
-$ ./01-version-check.sh
-$ ./02-setup_lfs_user
-$ su - lfs
-$ cd automate-lfs-build
-$ ./03-build_toolchain
-$ exit
-$ ./04-build_packages
-$ ./05-create_image
+export LFS=/mnt/lfs
+mkdir -p $LFS/automate-lfs-build
+git clone https://github.com/ranjithum/automate-lfs-build $LFS/automate-lfs-build
+cd $LFS/automate-lfs-build
+mkdir -p $LFS/lfs-source; wget --input-file=./lfs-packages.txt --continue --directory-prefix=$LFS/lfs-source
+./01-version-check.sh
+./02-setup-lfs-user
+su - lfs
+cd automate-lfs-build
+./03-build-toolchain
+exit
+./04-build-packages
+./05-make-bootable
+./06-create-image
 ```
