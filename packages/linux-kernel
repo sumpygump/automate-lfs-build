@@ -37,7 +37,7 @@ build_install()
     make install >>"$LOGFILE" 2>&1
 
     # Rename the vmlinuz file to be specific versioned
-    mv /boot/vmlinuz-linux /boot/vmlinuz-4.20.12-lfs-8.4
+    mv -vp /boot/vmlinuz /boot/vmlinuz-4.20.12-lfs-8.4 >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

@@ -71,6 +71,11 @@ main()
     echo "Entering chroot environment"
     echo "-------------------------------------------"
     make_bootable_as_chroot
+
+    echo "Congratulations\! Everything is done and you are ready to boot LFS"
+    echo "One last thing to do though: set the root password."
+    echo "Run ./enter-chroot to re-enter the chroot and execute command 'passwd root'"
+    echo "-------------------------------------------"
 }
 
 main

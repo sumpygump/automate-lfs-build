@@ -327,7 +327,7 @@ setup_grub()
 
     grub-install --target i386-pc $LFS_DRIVE
 
-    cat > /boot/grub/grub.cfg << "EOF"
+    cat > /boot/grub/grub.cfg <<EOF
 # Begin /boot/grub/grub.cfg
 set default=0
 set timeout=5
@@ -336,7 +336,7 @@ insmod ext2 biosdisk
 set root=(hd0,2)
 
 menuentry "GNU/Linux, Linux $LINUX_VERSION" {
-        linux   /boot/vmlinuz-$LINUX_VERSION root=/dev/sda2 ro
+    linux /vmlinuz-$LINUX_VERSION root=/dev/sda3 ro
 }
 EOF
 }
