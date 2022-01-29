@@ -11,6 +11,11 @@ mSBU=100
 
 fetch()
 {
+    if [ -f "$SRCDIR/$TARFILE" ]; then
+        # We already have the file we want
+        return 0
+    fi
+
     # Because of the vulnerability name change of this tarball, need special
     # logic to rename the downloaded file to the expected target tarfile
     local alt_filename=$(basename $FETCH_URL)
