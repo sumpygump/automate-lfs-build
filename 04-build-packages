@@ -16,17 +16,18 @@
 # as root user. It will run all the compilation in a chroot environment for
 # isolation.
 #
-# By default it will attempt to make a linux system with busybox
-# (experimental), but if the environment variable $BIG_LINUX is set it will
-# build the packages suggested by lfs.
+# By default it will attempt to make a linux system with packages suggested by
+# LFS, but if you set the environment variable PKGS_BUSYBOX=1 it will attempt
+# to create a system using busy box (less packages to build).
 #----------------------------------------------------------------------------#
 
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source $REPO_ROOT/common/common_utils
 source $REPO_ROOT/common/common_source
 
-if [ -z "$BIG_LINUX" ]; then
-    PACKAGES="glibc flex zlib elfutils busybox openssl grub pkg-config e2fsprogs linux-kernel"
+if [ "$PKGS_BUSYBOX" == "1" ]; then
+    PACKAGES="glibc flex zlib elfutils busybox openssl grub \
+        pkg-config e2fsprogs linux-kernel"
 else
     PACKAGES="linux-header man-pages glibc zlib file readline m4 bc      \
         binutils gmp mpfr mpc shadow gcc bzip2 pkg-config ncurses        \
