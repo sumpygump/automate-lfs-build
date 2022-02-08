@@ -6,19 +6,87 @@ NAME=glibc
 VERSION=$GLIBC_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/glibc/$TARFILE"
-mSBU=5100
+FETCH_PATCH="https://www.linuxfromscratch.org/patches/lfs/11.0/glibc-2.34-fhs-1.patch"
+mSBU=4200
+
+fetch()
+{
+    if [ ! -f "$SRCDIR/$TARFILE" ]; then
+        default_fetch "$FETCH_URL"
+        [ $? -ne 0 ] && return $?
+    fi
+
+    if [ ! -f "$SRCDIR/$(basename $FETCH_PATCH)" ]; then
+        default_fetch "$FETCH_PATCH"
+        [ $? -ne 0 ] && return $?
+    fi
+
+	return 0
+}
+
+extract()
+{
+    default_extract "$SRCDIR/$TARFILE"
+    [ $? -ne 0 ] && return $?
+
+	return 0
+}
+
+patchup()
+{
+	{
+    cd "$WORKBENCH/$NAME-$VERSION"
+
+	case $(uname -m) in
+		i?86)   ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
+		;;
+		x86_64) ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64
+				ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
+		;;
+	esac
+
+	patch -Np1 -i "$SRCDIR/$(basename $FETCH_PATCH)"
+	} >>"$LOGFILE" 2>&1
+}
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
     cd build
+
+	echo "rootsbindir=/usr/sbin" > configparms
+
     BUILD_PATH=$(pwd)
-    ../configure    --prefix=/tools                 \
-            --host="$LFS_TGT"                       \
-            --build="$(../scripts/config.guess)"    \
-            --enable-kernel=3.2                     \
-            --with-headers=/tools/include >>"$LOGFILE" 2>&1
+    ../configure                             \
+        --prefix=/usr                        \
+		--host="$LFS_TGT"                    \
+		--build="$(../scripts/config.guess)" \
+		--enable-kernel=3.2                  \
+		--with-headers=$LFS/usr/include      \
+		libc_cv_slibdir=/usr/lib >>"$LOGFILE" 2>&1
+}
+
+build()
+{
+	cd "$BUILD_PATH"
+	# Force to run with one job only
+	make -j1 >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+	cd "$BUILD_PATH"
+	make $MAKE_JOBS DESTDIR=$LFS install >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+	#sed '/RTLDLIST=s@/usr@@g' -i $LFS/usr/bin/ldd >>$LOGFILE 2>&1
+	# It seems like this line above has a typo, so I did it like this instead:
+	sed 's@/usr/lib@lib@g' -i $LFS/usr/bin/ldd >>$LOGFILE 2>&1
+
+	$LFS/tools/libexec/gcc/$LFS_TGT/$GCC_VER/install-tools/mkheaders >>$LOGFILE 2>&1
 }
 
 test_build()
@@ -26,7 +94,7 @@ test_build()
     echo 'int main(){}' > dummy.c
     $LFS_TGT-gcc dummy.c
 
-    if ! readelf -l a.out | grep ': /tools' >/dev/null 2>&1; then
+    if ! readelf -l a.out | grep '/ld-linux' >/dev/null 2>&1; then
         return 1
     fi
     rm -rf a.out dummy.c

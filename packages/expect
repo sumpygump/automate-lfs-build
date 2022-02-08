@@ -1,0 +1,41 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=expect
+VERSION=$EXPECT_VER
+TARFILE=${NAME}${VERSION}.tar.gz
+FETCH_URL="https://prdownloads.sourceforge.net/expect/$TARFILE"
+mSBU=100
+
+patchup()
+{
+    cd "$WORKBENCH"/"${NAME}${VERSION}"
+    cp -v configure{,.orig} >>"$LOGFILE" 2>&1
+    sed 's:/usr/local/bin:/bin:' configure.orig > configure
+}
+
+configure()
+{
+    cd "$WORKBENCH"/"${NAME}${VERSION}"
+    BUILD_PATH=$(pwd)
+
+    ./configure \
+        --prefix=/usr \
+        --with-tcl=/usr/lib \
+        --enable-shared \
+        --mandir=/usr/share/man \
+        --with-tclinclude=/usr/include >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+    ln -svf $NAME$VERSION/libexpect$VERSION.so /usr/lib >>"$LOGFILE" 2>&1
+}
+
+cleanup()
+{
+    default_cleanup "$WORKBENCH"/"${NAME}${VERSION}"
+}
+
+source "$(dirname "$0")"/../common/common_exec

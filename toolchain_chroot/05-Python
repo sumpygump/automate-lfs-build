@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=Python
+VERSION=$PYTHON_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="https://www.python.org/ftp/python/$VERSION/$TARFILE"
+mSBU=1200
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+
+    ./configure \
+        --prefix=/usr \
+        --without-ensurepip >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

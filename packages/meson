@@ -5,7 +5,7 @@ source "$(dirname "$0")"/../common/common_source
 NAME=meson
 VERSION=$MESON_VER
 TARFILE=$NAME-$VERSION.tar.gz
-FETCH_URL="https://github.com/mesonbuild/meson/releases/download/0.49.2/$TARFILE"
+FETCH_URL="https://github.com/mesonbuild/meson/releases/download/$VERSION/$TARFILE"
 mSBU=50
 
 configure()
@@ -23,7 +23,13 @@ build()
 build_install()
 {
     cd "$BUILD_PATH"
-    python3 setup.py install --root=dest >>"$LOGFILE" 2>&1
+    {
+    python3 setup.py install --root=dest
+
+    cp -rv dest/* /
+    install -vDm644 data/shell-completions/bash/meson /usr/share/bash-completion/completions/meson
+    install -vDm644 data/shell-completions/zsh/_meson /usr/share/zsh/site-functions/_meson
+    } >> "$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

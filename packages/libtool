@@ -13,4 +13,12 @@ configure()
     default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
 }
 
+post_install()
+{
+    {
+    # Remove a useless static library
+    rm -fv /usr/lib/libltdl.a
+    } >>"$LOGFILE" 2>&1
+}
+
 source "$(dirname "$0")"/../common/common_exec

@@ -6,14 +6,19 @@ NAME=grep
 VERSION=$GREP_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/grep/$TARFILE"
-mSBU=400
+mSBU=800
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --bindir=/bin >>"$LOGFILE" 2>&1
+    ./configure --prefix=/usr >>"$LOGFILE" 2>&1
+}
+
+post_build()
+{
+    make check >> "$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

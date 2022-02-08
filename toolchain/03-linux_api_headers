@@ -5,7 +5,7 @@ source "$(dirname "$0")"/../common/common_source
 NAME=linux
 VERSION=$LINUX_VER
 TARFILE=$NAME-$VERSION.tar.xz
-FETCH_URL="https://www.kernel.org/pub/linux/kernel/v4.x/$TARFILE"
+FETCH_URL="https://www.kernel.org/pub/linux/kernel/v5.x/$TARFILE"
 mSBU=100
 
 configure()
@@ -19,14 +19,19 @@ build()
     {
     cd "$BUILD_PATH"
     make mrproper
-    make $SILENT_MAKE INSTALL_HDR_PATH=dest headers_install
     } >>"$LOGFILE" 2>&1
 }
 
 build_install()
 {
+    {
     cd "$BUILD_PATH"
-    cp -rv dest/include/* /tools/include/ >>"$LOGFILE" 2>&1
+
+    make headers
+    find usr/include -name '.*' -delete
+    rm -v usr/include/Makefile
+    cp -rv usr/include $LFS/usr
+    } >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

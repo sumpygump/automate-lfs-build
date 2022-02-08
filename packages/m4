@@ -6,18 +6,14 @@ NAME=m4
 VERSION=$M4_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/m4/$TARFILE"
-mSBU=400
-
-patchup()
-{
-    cd "$WORKBENCH/$NAME-$VERSION"
-    sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
-    echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
-}
+mSBU=700
 
 configure()
 {
-    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+
+    ./configure --prefix=/usr >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

@@ -3,16 +3,15 @@
 source "$(dirname "$0")"/../common/common_source
 
 NAME=lfs-bootscripts
-VERSION=20180820
-TARFILE=$NAME-$VERSION.tar.bz2
-FETCH_URL="https://linuxfromscratch.org/museum/lfs-museum/8.4/$TARFILE"
+VERSION=20210608
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="https://www.linuxfromscratch.org/lfs/downloads/11.0/$TARFILE"
 mSBU=50
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
-    echo $BUILD_PATH
     return 0
 }
 

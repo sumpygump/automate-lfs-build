@@ -6,21 +6,26 @@ NAME=bash
 VERSION=$BASH_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/bash/$TARFILE"
-mSBU=1700
+mSBU=1600
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --docdir=/usr/share/doc/bash-5.0 --without-bash-malloc --with-installed-readline >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --docdir=/usr/share/doc/bash-$VERSION \
+        --without-bash-malloc \
+        --with-installed-readline >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
-    {
-        mv -vf /usr/bin/bash /bin
-    } >>"$LOGFILE" 2>&1 
+    #{
+    #    exec /bin/bash --login +h
+    #} >>"$LOGFILE" 2>&1
+    :
 }
 
 source "$(dirname "$0")"/../common/common_exec

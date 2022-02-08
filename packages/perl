@@ -6,12 +6,29 @@ NAME=perl
 VERSION=$PERL_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.cpan.org/src/5.0/$TARFILE"
-mSBU=7100
+FETCH_PATCH="https://www.linuxfromscratch.org/patches/lfs/11.0/perl-5.34.0-upstream_fixes-1.patch"
+mSBU=10000
+
+provide_source_urls()
+{
+    echo $FETCH_URL $FETCH_PATCH
+    return 0
+}
+
+fetch()
+{
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_PATCH bzip2-1.0.8-install_docs-1.patch
+}
 
 patchup()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
+
+    # Apply a patch that fixes issue from recent versions of gdbm
+    patch -Np1 -i "$SRCDIR/$(basename $FETCH_PATCH)" >>"$LOGFILE" 2>&1
+
+    # Use zlib and bzip2 from the installed system instead of internal
     export BUILD_ZLIB=False
     export BUILD_BZIP2=0
 }
@@ -20,14 +37,21 @@ configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
-    sh Configure \
-        -des \
-        -Dprefix=/usr \
-        -Dvendorprefix=/usr \
-        -Dman1dir=/usr/share/man/man1 \
-        -Dman3dir=/usr/share/man/man3 \
-        -Dpager="/usr/bin/less -isR" \
-        -Duseshrplib -Dusethreads >>"$LOGFILE" 2>&1
+
+    sh Configure -des \
+        -Dprefix=/usr                                \
+        -Dvendorprefix=/usr                          \
+        -Dprivlib=/usr/lib/perl5/5.34/core_perl      \
+        -Darchlib=/usr/lib/perl5/5.34/core_perl      \
+        -Dsitelib=/usr/lib/perl5/5.34/site_perl      \
+        -Dsitearch=/usr/lib/perl5/5.34/site_perl     \
+        -Dvendorlib=/usr/lib/perl5/5.34/vendor_perl  \
+        -Dvendorarch=/usr/lib/perl5/5.34/vendor_perl \
+        -Dman1dir=/usr/share/man/man1                \
+        -Dman3dir=/usr/share/man/man3                \
+        -Dpager="/usr/bin/less -isR"                 \
+        -Duseshrplib                                 \
+        -Dusethreads >>"$LOGFILE" 2>&1
 }
 
 build()
@@ -39,10 +63,10 @@ build()
 build_install()
 {
     cd "$BUILD_PATH"
-    make -ik $SILENT_MAKE $MAKE_JOBS install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS install >>"$LOGFILE" 2>&1
 }
 
-post_build()
+post_install()
 {
     unset BUILD_ZLIB BUILD_BZIP2
 }

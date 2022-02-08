@@ -8,12 +8,6 @@ TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/autoconf/$TARFILE"
 mSBU=60
 
-patchup()
-{
-    cd "$WORKBENCH/$NAME-$VERSION"
-    sed '361 s/{/\\{/' -i bin/autoscan.in
-}
-
 configure()
 {
     default_configure_chroot "$WORKBENCH/$NAME-$VERSION"

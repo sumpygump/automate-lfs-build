@@ -5,9 +5,8 @@ source "$(dirname "$0")"/../common/common_source
 NAME=man-pages
 VERSION=$MANPAGES_VER
 TARFILE=$NAME-$VERSION.tar.xz
-# Older versions (<5.x) are in the /Archive/ path
-FETCH_URL="https://mirrors.edge.kernel.org/pub/linux/docs/man-pages/Archive/$TARFILE"
-mSBU=30
+FETCH_URL="https://www.kernel.org/pub/linux/docs/man-pages/$TARFILE"
+mSBU=10
 
 configure()
 {
@@ -19,6 +18,12 @@ build()
 {
     # Do Nothing
     :
+}
+
+build_install()
+{
+    cd $BUILD_PATH
+    make prefix=/usr install >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

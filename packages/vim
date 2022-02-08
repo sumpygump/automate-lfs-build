@@ -4,30 +4,33 @@ source "$(dirname "$0")"/../common/common_source
 
 NAME=vim
 VERSION=$VIM_VER
-TARFILE=$NAME-$VERSION.tar.bz2
-FETCH_URL="ftp://ftp.vim.org/pub/vim/unix/$TARFILE"
-mSBU=1300
-
-extract()
-{
-    [ -d "$WORKBENCH/vim81" ] && rm -rf "$WORKBENCH/vim81"
-    default_extract "$SRCDIR/$TARFILE"
-}
+TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="https://anduin.linuxfromscratch.org/LFS/$TARFILE"
+mSBU=600
 
 configure()
 {
-    cd "$WORKBENCH/vim81"
+    cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
+
+    echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+
     ./configure --prefix=/usr >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     {
-        ln -sv vim /usr/bin/vi
-        for L in  /usr/share/man/{,*/}man1/vim.1; do     ln -sv vim.1 $(dirname $L)/vi.1; done
-        ln -sv ../vim/vim81/doc /usr/share/doc/vim-8.1
+    # Symlink vi for vim
+    ln -svf vim /usr/bin/vi
+    for L in  /usr/share/man/{,*/}man1/vim.1; do
+        ln -svf vim.1 $(dirname $L)/vi.1
+    done
+
+    # Make location of documentation consistent
+    ln -svf ../vim/vim82/doc /usr/share/doc/vim-$VERSION
     } >>"$LOGFILE" 2>&1
+
     cat > /etc/vimrc << "EOF"
 " Begin /etc/vimrc
 " Ensure defaults are set before customizing settings, not after
@@ -42,11 +45,6 @@ if (&term == "xterm") || (&term == "putty")
 endif
 " End /etc/vimrc
 EOF
-}
-
-cleanup()
-{
-    default_cleanup "$WORKBENCH/vim81"
 }
 
 source "$(dirname "$0")"/../common/common_exec

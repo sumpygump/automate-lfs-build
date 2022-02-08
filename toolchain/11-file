@@ -1,0 +1,49 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=file
+VERSION=$FILE_VER
+TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="ftp://ftp.astron.com/pub/file/$TARFILE"
+mSBU=200
+
+pre_configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    mkdir build
+    cd build
+
+    {
+    # First make a version that is the same on the host system
+    ../configure \
+        --disable-bzlib \
+        --disable-libseccomp \
+        --disable-xzlib \
+        --disable-zlib
+    make
+    } >>"$LOGFILE" 2>&1
+}
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    ./configure \
+        --prefix=/usr \
+        --host=$LFS_TGT \
+        --build=$(./config.guess) >>"$LOGFILE" 2>&1
+}
+
+build()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    make $MAKE_JOBS FILE_COMPILE=$(pwd)/build/src/file >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    make $MAKE_JOBS DESTDIR=$LFS install >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

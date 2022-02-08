@@ -6,23 +6,24 @@ NAME=man-db
 VERSION=$MANDB_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://download.savannah.gnu.org/releases/man-db/$TARFILE"
-mSBU=300
+mSBU=400
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
 
-    mkdir build; cd build; BUILD_PATH=$(pwd)
-    ../configure --prefix=/usr                         \
-            --docdir=/usr/share/doc/man-db-2.8.5    \
-            --sysconfdir=/etc                       \
-            --disable-setuid                        \
-            --enable-cache-owner=bin                \
-            --with-browser=/usr/bin/lynx            \
-            --with-vgrind=/usr/bin/vgrind           \
-            --with-grap=/usr/bin/grap               \
-            --with-systemdtmpfilesdir=              \
-            --with-systemdsystemunitdir= >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --docdir=/usr/share/doc/man-db-$VERSION \
+        --sysconfdir=/etc \
+        --disable-setuid \
+        --enable-cache-owner=bin \
+        --with-browser=/usr/bin/lynx \
+        --with-vgrind=/usr/bin/vgrind \
+        --with-grap=/usr/bin/grap \
+        --with-systemdtmpfilesdir= \
+        --with-systemdsystemunitdir= >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

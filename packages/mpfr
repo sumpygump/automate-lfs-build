@@ -6,25 +6,32 @@ NAME=mpfr
 VERSION=$MPFR_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://www.mpfr.org/mpfr-4.0.2/$TARFILE"
-mSBU=1000
+mSBU=800
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
-
     BUILD_PATH=$(pwd)
-    ../configure --prefix=/usr              \
-        --disable-static                    \
-        --enable-thread-safe                \
-        --docdir=/usr/share/doc/mpfr-4.0.2 >>"$LOGFILE" 2>&1
+
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --enable-thread-safe \
+        --docdir=/usr/share/doc/mpfr-$VERSION >>"$LOGFILE" 2>&1
 }
 
 post_build()
 {
-     cd "$BUILD_PATH"
-     make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
+    cd "$BUILD_PATH"
+    make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
+
+    # Run tests
+    make check > /tmp/mpfr-check-log
+    tests_passed=$(awk '/# PASS:/{total+=$3} ; END{print total}' /tmp/mpfr-check-log)
+    if [ $tests_passed -ne 181 ]; then
+        echo "Expected 181 tests to pass, but only $tests_passed passed." >>"$LOGFILE"
+        return 1
+    fi
 }
 
 post_install()

@@ -8,40 +8,42 @@ TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://ftp.gnu.org/gnu/ncurses/$TARFILE"
 mSBU=300
 
-patchup()
-{
-    cd "$WORKBENCH/$NAME-$VERSION"
-    sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
-}
-
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
     BUILD_PATH=$(pwd)
-    ../configure --prefix=/usr          \
-        --mandir=/usr/share/man         \
-        --with-shared --without-debug   \
-        --without-normal                \
-        --enable-pc-files               \
+
+    ./configure \
+        --prefix=/usr \
+        --mandir=/usr/share/man \
+        --with-shared \
+        --without-debug \
+        --without-normal \
+        --enable-pc-files \
         --enable-widec >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     {
-    mv -v /usr/lib/libncursesw.so.6* /lib
-    ln -sfv ../../lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so
+    # Enable apps expecting non-wide-character ncurses libs
     for lib in ncurses form panel menu ; do
         rm -vf                    /usr/lib/lib${lib}.so
         echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so
         ln -sfv ${lib}w.pc        /usr/lib/pkgconfig/${lib}.pc
     done
 
+    # Make sure apps that look for -lcurses are still buildable
     rm -vf                     /usr/lib/libcursesw.so
     echo "INPUT(-lncursesw)" > /usr/lib/libcursesw.so
     ln -sfv libncurses.so      /usr/lib/libcurses.so
+
+    # Remove a static library
+    rm -fv /usr/lib/libncurses++w.a
+
+    # Install ncurses documentation
+    mkdir -v       /usr/share/doc/ncurses-$VERSION
+    cp -v -R doc/* /usr/share/doc/ncurses-$VERSION
     } >>"$LOGFILE" 2>&1
 }
 

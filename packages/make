@@ -4,15 +4,9 @@ source "$(dirname "$0")"/../common/common_source
 
 NAME=make
 VERSION=$MAKE_VER
-TARFILE=$NAME-$VERSION.tar.bz2
-FETCH_URL="http://ftp.gnu.org/gnu/make/$TARFILE"
-mSBU=500
-
-patchup()
-{
-    cd "$WORKBENCH/$NAME-$VERSION"
-    sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
-}
+TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="https://ftp.gnu.org/gnu/make/$TARFILE"
+mSBU=600
 
 configure()
 {

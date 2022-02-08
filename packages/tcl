@@ -1,0 +1,89 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=tcl
+VERSION=$TCL_VER
+TARFILE=${NAME}${VERSION}-src.tar.gz
+FETCH_URL="https://downloads.sourceforge.net/tcl/$TARFILE"
+FETCH_DOC="https://downloads.sourceforge.net/tcl/$NAME$VERSION-html.tar.gz"
+mSBU=3700
+
+provide_source_urls()
+{
+    echo $FETCH_URL $FETCH_DOC
+    return 0
+}
+
+fetch()
+{
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_DOC $NAME$VERSION-html.tar.gz
+}
+
+extract()
+{
+    default_extract "$SRCDIR/$TARFILE"
+    [ $? -ne 0 ] && return $?
+
+    cd "$WORKBENCH/$NAME$VERSION"
+    local docfile=$(basename $FETCH_DOC)
+    tar -xf "$SRCDIR/$docfile" --strip-components=1
+}
+
+configure()
+{
+    cd "$WORKBENCH/${NAME}${VERSION}"
+    cd unix
+    BUILD_PATH=$(pwd)
+    ./configure \
+        --prefix=/usr \
+        --mandir=/usr/share/man \
+        $([ "$(uname -m)" = x86_64 ] && echo --enable-64bit) >>"$LOGFILE" 2>&1
+}
+
+post_build()
+{
+    {
+    SDIR="$WORKBENCH/$NAME$VERSION"
+    sed -e "s|$SDIR/unix|/usr/lib|" \
+        -e "s|$SDIR|/usr/include|"  \
+        -i tclConfig.sh
+
+    sed -e "s|$SDIR/unix/pkgs/tdbc1.1.2|/usr/lib/tdbc1.1.2|" \
+        -e "s|$SDIR/pkgs/tdbc1.1.2/generic|/usr/include|"    \
+        -e "s|$SDIR/pkgs/tdbc1.1.2/library|/usr/lib/tcl8.6|" \
+        -e "s|$SDIR/pkgs/tdbc1.1.2|/usr/include|"            \
+        -i pkgs/tdbc1.1.2/tdbcConfig.sh
+
+    sed -e "s|$SDIR/unix/pkgs/itcl4.2.1|/usr/lib/itcl4.2.1|" \
+        -e "s|$SDIR/pkgs/itcl4.2.1/generic|/usr/include|"    \
+        -e "s|$SDIR/pkgs/itcl4.2.1|/usr/include|"            \
+        -i pkgs/itcl4.2.1/itclConfig.sh
+    unset SDIR
+    } >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+    {
+    # Make installed lib writable so debugging symbols can be removed later
+    chmod -v u+w /tools/lib/libtcl8.6.so
+
+    # Install tcl headers
+    make $SILENT_MAKE install-private-headers
+
+    # Make necessary symbolic link
+    ln -svf tclsh8.6 /tools/bin/tclsh
+
+    # Rename a man page conflicting with a perl man page
+    mv /usr/share/man/man3/{Thread,Tcl_Thread}.3
+    } >>"$LOGFILE" 2>&1
+}
+
+cleanup()
+{
+    default_cleanup "$WORKBENCH/${NAME}${VERSION}"
+}
+
+source "$(dirname "$0")"/../common/common_exec

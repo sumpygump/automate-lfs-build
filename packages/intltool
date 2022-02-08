@@ -8,9 +8,24 @@ TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://launchpad.net/intltool/trunk/0.51.0/+download/$TARFILE"
 mSBU=50
 
+patchup()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+
+    sed -i 's:\\\${:\\\$\\{:' intltool-update.in >>"$LOGFILE" 2>&1
+}
+
 configure()
 {
     default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
+}
+
+post_install()
+{
+    {
+    cd "$WORKBENCH/$NAME-$VERSION"
+    install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-$VERSION/I18N-HOWTO
+    } >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

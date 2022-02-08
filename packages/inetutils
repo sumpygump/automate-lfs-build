@@ -8,18 +8,14 @@ TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/inetutils/$TARFILE"
 mSBU=300
 
-patchup()
-{
-    cd "$WORKBENCH/$NAME-$VERSION"
-    echo '#define PATH_PROCNET_DEV "/proc/net/dev"' >> ifconfig/system/linux.h
-}
-
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr  \
+    ./configure \
+        --prefix=/usr  \
+        --bindir=/usr/bin \
         --localstatedir=/var \
         --disable-logger \
         --disable-whois \
@@ -34,8 +30,7 @@ post_install()
 {
     cd "$BUILD_PATH"
     {
-        mv -v /usr/bin/{hostname,ping,ping6,traceroute} /bin
-        mv -v /usr/bin/ifconfig /sbin
+        mv -v /usr/{,s}bin/ifconfig
     } >>"$LOGFILE" 2>&1
 
 }

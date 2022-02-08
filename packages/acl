@@ -6,22 +6,17 @@ NAME=acl
 VERSION=$ACL_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://download.savannah.gnu.org/releases/acl/$TARFILE"
-mSBU=50
+mSBU=100
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --bindir=/bin --disable-static --libexecdir=/usr/lib --docdir=/usr/share/doc/acl-2.2.53 >>"$LOGFILE" 2>&1
-}
-
-post_install()
-{
-    {
-    mv -v /usr/lib/libacl.so.* /lib
-    ln -sfv ../../lib/$(readlink /usr/lib/libacl.so) /usr/lib/libacl.so
-    } >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --docdir=/usr/share/doc/acl-$VERSION >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

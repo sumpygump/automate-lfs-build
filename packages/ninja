@@ -5,7 +5,7 @@ source "$(dirname "$0")"/../common/common_source
 NAME=ninja
 VERSION=$NINJA_VER
 TARFILE=$NAME-$VERSION.tar.gz
-FETCH_URL="https://github.com/ninja-build/ninja/archive/v1.9.0/$TARFILE"
+FETCH_URL="https://github.com/ninja-build/ninja/archive/v$VERSION/$TARFILE"
 mSBU=200
 
 patchup()

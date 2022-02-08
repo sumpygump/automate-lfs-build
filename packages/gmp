@@ -6,25 +6,32 @@ NAME=gmp
 VERSION=$GMP_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/gmp/$TARFILE"
-mSBU=1300
+mSBU=1000
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
-
     BUILD_PATH=$(pwd)
-    ../configure --prefix=/usr              \
-        --enable-cxx                        \
-        --disable-static                    \
-        --docdir=/usr/share/doc/gmp-6.1.2 >>"$LOGFILE" 2>&1 
+
+    ./configure \
+        --prefix=/usr \
+        --enable-cxx \
+        --disable-static \
+        --docdir=/usr/share/doc/gmp-$VERSION >>"$LOGFILE" 2>&1
 }
 
 post_build()
 {
-     cd "$BUILD_PATH"
-     make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
+    cd "$BUILD_PATH"
+    make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
+
+    # Test
+    make check 2>&1 > gmp-check-log
+    tests_passed=$(awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log)
+    if [ $tests_passed -ne 197 ]; then
+        echo "Expected 197 tests to pass, but only $tests_passed passed." >>"$LOGFILE"
+        return 1
+    fi
 }
 
 post_install()

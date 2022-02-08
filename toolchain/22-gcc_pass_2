@@ -1,0 +1,115 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=gcc
+VERSION=$GCC_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/gcc/gcc-$VERSION/$TARFILE"
+FETCH_MPFR="http://www.mpfr.org/mpfr-$MPFR_VER/mpfr-$MPFR_VER.tar.xz"
+FETCH_GMP="http://ftp.gnu.org/gnu/gmp/gmp-$GMP_VER.tar.xz"
+FETCH_MPC="https://ftp.gnu.org/gnu/mpc/mpc-$MPC_VER.tar.gz"
+mSBU=12000
+
+fetch()
+{
+    if [ ! -f "$SRCDIR/$TARFILE" ]; then
+        default_fetch "$FETCH_URL"
+        [ $? -ne 0 ] && return $?
+    fi
+
+    if [ ! -f "$SRCDIR/mpfr-$MPFR_VER.tar.xz" ]; then
+        default_fetch "$FETCH_MPFR"
+        [ $? -ne 0 ] && return $?
+    fi
+
+    if [ ! -f "$SRCDIR/gmp-$GMP_VER.tar.xz" ]; then
+        default_fetch "$FETCH_GMP"
+        [ $? -ne 0 ] && return $?
+    fi
+
+    if [ ! -f "$SRCDIR/mpc-$MPC_VER.tar.gz" ]; then
+        default_fetch "$FETCH_MPC"
+        [ $? -ne 0 ] && return $?
+    fi
+
+    return 0
+}
+
+extract()
+{
+    default_extract "$SRCDIR/$TARFILE"
+    [ $? -ne 0 ] && return $?
+
+    default_extract "$SRCDIR/mpfr-$MPFR_VER.tar.xz"
+    [ $? -ne 0 ] && return $?
+
+    default_extract "$SRCDIR/gmp-$GMP_VER.tar.xz"
+    [ $? -ne 0 ] && return $?
+
+    default_extract "$SRCDIR/mpc-$MPC_VER.tar.gz"
+    [ $? -ne 0 ] && return $?
+
+    return 0
+}
+
+patchup()
+{
+    {
+    cd "$WORKBENCH/$NAME-$VERSION"
+    mv "$WORKBENCH/mpfr-$MPFR_VER" ./mpfr &&
+    mv "$WORKBENCH/gmp-$GMP_VER" ./gmp &&
+    mv "$WORKBENCH/mpc-$MPC_VER" ./mpc
+
+    case $(uname -m) in
+        x86_64)
+            sed -e '/m64=/s/lib64/lib/' \
+            -i.orig gcc/config/i386/t-linux64
+        ;;
+    esac
+    } >>"$LOGFILE" 2>&1
+}
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    mkdir build
+    cd build
+
+    {
+    mkdir -pv $LFS_TGT/libgcc
+    ln -s ../../../libgcc/gthr-posix.h $LFS_TGT/libgcc/gthr-default.h
+
+    BUILD_PATH=$(pwd)
+    ../configure                   \
+        --build=$(../config.guess) \
+        --host=$LFS_TGT            \
+        --prefix=/usr              \
+        CC_FOR_TARGET=$LFS_TGT-gcc \
+        --with-build-sysroot=$LFS  \
+        --enable-initfini-array    \
+        --disable-nls              \
+        --disable-multilib         \
+        --disable-decimal-float    \
+        --disable-libatomic        \
+        --disable-libgomp          \
+        --disable-libquadmath      \
+        --disable-libssp           \
+        --disable-libvtv           \
+        --disable-libstdcxx        \
+        --enable-languages=c,c++
+    } >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+    cd "$BUILD_PATH"
+    make $MAKE_JOBS DESTDIR=$LFS install >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+    ln -svf gcc $LFS/usr/bin/cc >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

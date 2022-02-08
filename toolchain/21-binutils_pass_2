@@ -1,0 +1,37 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=binutils
+VERSION=$BINUTILS_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/binutils/$TARFILE"
+mSBU=1300
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    mkdir build
+    cd build
+    BUILD_PATH=$(pwd)
+
+    ../configure                   \
+        --prefix=/usr              \
+        --build=$(../config.guess) \
+        --host=$LFS_TGT            \
+        --disable-nls              \
+        --enable-shared            \
+        --disable-werror           \
+        --enable-64-bit-bfd >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+    {
+    cd "$BUILD_PATH"
+    make -j1 DESTDIR=$LFS install >>"$LOGFILE" 2>&1
+    install -vm755 libctf/.libs/libctf.so.0.0.0 $LFS/usr/lib
+    } >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=util-linux
+VERSION=$UTILLINUX_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="https://www.kernel.org/pub/linux/utils/util-linux/v2.37/$TARFILE"
+mSBU=700
+
+configure()
+{
+    mkdir -pv /var/lib/hwclock
+
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+
+    ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime    \
+        --libdir=/usr/lib    \
+        --docdir=/usr/share/doc/util-linux-2.37.2 \
+        --disable-chfn-chsh  \
+        --disable-login      \
+        --disable-nologin    \
+        --disable-su         \
+        --disable-setpriv    \
+        --disable-runuser    \
+        --disable-pylibmount \
+        --disable-static     \
+        --without-python     \
+        runstatedir=/run >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=make
+VERSION=$MAKE_VER
+TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="http://ftp.gnu.org/gnu/make/$TARFILE"
+mSBU=100
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+
+    ./configure \
+        --prefix=/usr \
+        --without-guile \
+        --host=$LFS_TGT \
+        --build=$(build-aux/config.guess) >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    make $MAKE_JOBS DESTDIR=$LFS install >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

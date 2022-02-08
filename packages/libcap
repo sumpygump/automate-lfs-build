@@ -11,7 +11,7 @@ mSBU=50
 patchup()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    sed -i '/install.*STALIBNAME/d' libcap/Makefile
+    sed -i '/install -m.*STA/d' libcap/Makefile
 }
 
 configure()
@@ -20,18 +20,24 @@ configure()
     BUILD_PATH=$(pwd)
 }
 
+build()
+{
+    cd $BUILD_PATH
+    make $MAKE_JOBS prefix=/usr lib=lib >>"$LOGFILE" 2>&1
+
+    make test >> "$LOGFILE" 2>&1
+}
+
 build_install()
 {
     cd $BUILD_PATH
-    make $SILENT_MAKE $MAKE_JOBS RAISE_SETFCAP=no lib=lib prefix=/usr install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS prefix=/usr lib=lib install >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     {
-    chmod -v 755 /usr/lib/libcap.so.2.26
-    mv -v /usr/lib/libcap.so.* /lib
-    ln -sfv ../../lib/$(readlink /usr/lib/libcap.so) /usr/lib/libcap.so
+    chmod -v 755 /usr/lib/lib{cap,psx}.so.$VERSION
     } >>"$LOGFILE" 2>&1
 }
 

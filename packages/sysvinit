@@ -6,7 +6,7 @@ NAME=sysvinit
 VERSION=$SYSVINIT_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://download.savannah.gnu.org/releases/sysvinit/$TARFILE"
-FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/sysvinit-2.93-consolidated-1.patch"
+FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/11.0/sysvinit-2.99-consolidated-1.patch"
 mSBU=50
 
 provide_source_urls()

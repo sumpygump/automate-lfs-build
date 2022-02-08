@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=dejagnu
+VERSION=$DEJAGNU_VER
+TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="http://ftp.gnu.org/gnu/dejagnu/$TARFILE"
+mSBU=50
+
+configure()
+{
+    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
+    {
+    makeinfo --html --no-split -o doc/dejagnu.html ../doc/dejagnu.texi
+    makeinfo --plaintext -o doc/dejagnu.txt ../doc/dejagnu.texi
+    } >>"$LOGFILE" 2>&1
+}
+
+build()
+{
+    return 0
+}
+
+build_install()
+{
+    cd $BUILD_PATH
+    {
+    make install
+    install -v -dm755 /usr/share/doc/dejagnu-$VERSION
+    install -v -m644 doc/dejagnu.{html,txt} /usr/share/doc/dejagnu-$VERSION
+    } >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

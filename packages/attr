@@ -11,17 +11,13 @@ mSBU=50
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --bindir=/bin --disable-static --libexecdir=/usr/lib --docdir=/usr/share/doc/acl-2.2.53 >>"$LOGFILE" 2>&1
-}
-
-post_build()
-{
-    {
-        mv -v /usr/lib/libacl.so.* /lib
-        ln -sfv ../../lib/$(readlink /usr/lib/libacl.so) /usr/lib/libacl.so
-    } >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --sysconfdir=/etc \
+        --docdir=/usr/share/doc/attr-$VERSION >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

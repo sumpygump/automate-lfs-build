@@ -5,22 +5,23 @@ source "$(dirname "$0")"/../common/common_source
 NAME=flex
 VERSION=$FLEX_VER
 TARFILE=$NAME-$VERSION.tar.gz
-FETCH_URL="https://github.com/westes/flex/releases/download/v2.6.4/$TARFILE"
+FETCH_URL="https://github.com/westes/flex/releases/download/v$VERSION/$TARFILE"
 mSBU=400
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
     BUILD_PATH=$(pwd)
 
-    HELP2MAN=/tools/bin/true ../configure --prefix=/usr \
-        --docdir=/usr/share/doc/flex-2.6.4 >>"$LOGFILE" 2>&1 
+    ./configure \
+        --prefix=/usr \
+        --docdir=/usr/share/doc/flex-$VERSION \
+        --disable-static >>"$LOGFILE" 2>&1 
 }
 
 post_install()
 {
+    # Support a few programs still trying to run lex
     ln -svf flex /usr/bin/lex >>"$LOGFILE" 2>&1
 }
 

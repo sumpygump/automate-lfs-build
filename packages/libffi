@@ -5,25 +5,19 @@ source "$(dirname "$0")"/../common/common_source
 NAME=libffi
 VERSION=$LIBFFI_VER
 TARFILE=$NAME-$VERSION.tar.gz
-FETCH_URL="ftp://sourceware.org/pub/libffi/$TARFILE"
-mSBU=300
-
-patchup()
-{
-    cd "$WORKBENCH/$NAME-$VERSION"
-    sed -e '/^includesdir/ s/$(libdir).*$/$(includedir)/' \
-        -i include/Makefile.in
-    sed -e '/^includedir/ s/=.*$/=@includedir@/' \
-        -e 's/^Cflags: -I${includedir}/Cflags:/' \
-        -i libffi.pc.in
-}
+FETCH_URL="https://github.com/libffi/libffi/releases/download/v$VERSION/$TARFILE"
+mSBU=2000
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --disable-static --with-gcc-arch=native >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --with-gcc-arch=native \
+        --disable-exec-static-tramp >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

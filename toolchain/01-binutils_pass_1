@@ -14,21 +14,19 @@ configure()
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
-    ../configure --prefix=/tools        \
-            --with-sysroot="$LFS"       \
-            --with-lib-path=/tools/lib  \
-            --target="$LFS_TGT"         \
-            --disable-nls               \
-            --disable-werror >>"$LOGFILE" 2>&1
+    ../configure \
+		--prefix=$LFS/tools   \
+        --with-sysroot="$LFS" \
+        --target="$LFS_TGT"   \
+        --disable-nls         \
+        --disable-werror >>"$LOGFILE" 2>&1
 }
 
-post_build()
+build_install()
 {
-    {
-    case $(uname -m) in
-        x86_64) mkdir -vp /tools/lib && ln -sv lib /tools/lib64 ;;
-    esac
-    } >>"$LOGFILE" 2>&1
+    cd $BUILD_PATH
+    # Force one job to work around potential build issue
+    make install -j1 >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

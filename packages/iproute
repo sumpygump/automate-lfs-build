@@ -11,7 +11,12 @@ mSBU=200
 patchup()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    sed -i /ARPD/d Makefile; rm -f man/man8/arpd.8
+
+    # Prevent building arpd as it requires berkeley db
+    sed -i /ARPD/d Makefile
+    rm -f man/man8/arpd.8
+
+    # Disable building two modules that required iptables
     sed -i 's/.m_ipt.o//' tc/Makefile
 }
 
@@ -23,7 +28,10 @@ configure()
 
 build_install()
 {
-    make $SILENT_MAKE $MAKE_JOBS DOCDIR=/usr/share/doc/iproute2-4.20.0 install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE $MAKE_JOBS SBINDIR=/usr/bin install >>"$LOGFILE" 2>&1
+
+    mkdir -v /usr/share/doc/iproute2-$VERSION
+    cp -vf COPYING README* /usr/share/doc/iproute2-$VERSION >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

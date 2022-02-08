@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=texinfo
+VERSION=$TEXINFO_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/texinfo/$TARFILE"
+mSBU=300
+
+patchup()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    sed -e 's/__attribute_nonnull__/__nonnull/' \
+        -i gnulib/lib/malloc/dynarray-skeleton.c
+}
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+
+    ./configure --prefix=/usr >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

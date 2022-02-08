@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=gettext
+VERSION=$GETTEXT_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/gettext/$TARFILE"
+mSBU=900
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+
+    ./configure --disable-shared >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+    cd "$BUILD_PATH"
+    cp -vf gettext-tools/src/{msgfmt,msgmerge,xgettext} \
+        /usr/bin >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

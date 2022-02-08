@@ -5,8 +5,8 @@ source "$(dirname "$0")"/../common/common_source
 NAME=bzip2
 VERSION=$BZIP_VER
 TARFILE=$NAME-$VERSION.tar.gz
-FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$TARFILE"
-FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/bzip2-1.0.6-install_docs-1.patch"
+FETCH_URL="https://www.sourceware.org/pub/bzip2/$TARFILE"
+FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/11.0/bzip2-1.0.8-install_docs-1.patch"
 mSBU=30
 
 provide_source_urls()
@@ -18,13 +18,13 @@ provide_source_urls()
 fetch()
 {
     warn_if_missing $FETCH_URL $TARFILE
-    warn_if_missing $FETCH_PATCH bzip2-1.0.6-install_docs-1.patch
+    warn_if_missing $FETCH_PATCH bzip2-1.0.8-install_docs-1.patch
 }
 
 patchup()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    patch -Np1 -i "$SRCDIR"/bzip2-1.0.6-install_docs-1.patch >>"$LOGFILE" 2>&1
+    patch -Np1 -i "$SRCDIR"/bzip2-1.0.8-install_docs-1.patch >>"$LOGFILE" 2>&1
     [ $? -ne 0 ] && return 1
     sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
     sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
@@ -53,12 +53,18 @@ post_install()
 {
     cd "$BUILD_PATH"
     {
-        cp -vf bzip2-shared /bin/bzip2
-        cp -avf libbz2.so* /lib
-        ln -svf ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
-        rm -v /usr/bin/{bunzip2,bzcat,bzip2}
-        ln -svf bzip2 /bin/bunzip2
-        ln -svf bzip2 /bin/bzcat
+        # Install the shared library
+        cp -av libbz2.so.* /usr/lib
+        ln -sv libbz2.so.1.0.8 /usr/lib/libbz2.so
+
+        # Install binary into /usr/bin and make symlinks
+        cp -vf bzip2-shared /usr/bin/bzip2
+        for i in /usr/bin/{bzcat,bunzip2}; do
+            ln -sfv bzip2 $i
+        done
+
+        # Remove a useless static library
+        rm -fv /usr/lib/libbz2.a
     } >>"$LOGFILE" 2>&1
 }
 

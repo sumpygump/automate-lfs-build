@@ -1,0 +1,34 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=gawk
+VERSION=$GAWK_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="http://ftp.gnu.org/gnu/gawk/$TARFILE"
+mSBU=200
+
+patchup()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    sed -i 's/extras//' Makefile.in
+}
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    {
+    ./configure \
+        --prefix=/usr \
+        --host=$LFS_TGT \
+        --build=$(./config.guess)
+    } >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    make $MAKE_JOBS DESTDIR=$LFS install >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

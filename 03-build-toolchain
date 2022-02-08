@@ -18,18 +18,19 @@
 
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source $REPO_ROOT/common/common_utils
-source $REPO_ROOT/common/common_source
 
 if [ "$(id -u)" = 0 ]; then
     fatal "You must run script $0 as lfs user"
 fi
 
+source $REPO_ROOT/common/common_source
+
 validate_environment()
 {
     # TODO - Validate environment variables
     has_errors=0
-    if [ "$PATH" != "/tools/bin:/bin:/usr/bin" ]; then
-        error "Env PATH should be /tools/bin:/bin:/usr/bin"
+    if [ "$PATH" != "$LFS/tools/bin:/bin:/usr/bin" ] && [ "$PATH" != "$LFS/tools/bin:/usr/bin" ]; then
+        error "Env PATH should be $LFS/tools/bin:/usr/bin"
         has_errors=1
     fi
 
@@ -52,13 +53,13 @@ build_toolchain()
 {
     echo "-------------- LFS TOOLCHAIN --------------"
     echo "Beginning process to build toolchain"
-    echo "There are $(ls toolchain | wc -l) total steps to complete"
+    echo "There are $(ls toolchain | grep -v xx | wc -l) total steps to complete"
     echo "Sources are downloaded to $SRCDIR"
     echo "Logs are in $LOGPATH"
     echo "Completed steps are written to $FILE_DB"
     echo "-------------------------------------------"
 
-    for script in $(ls toolchain/)
+    for script in $(ls toolchain/ | grep -v xx)
     do
         info "BEGIN $script - $(zdate)"
         sh $(dirname $0)/toolchain/"$script"

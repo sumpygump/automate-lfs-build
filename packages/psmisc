@@ -13,12 +13,4 @@ configure()
     default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
 }
 
-post_install()
-{
-    {
-        mv -v /usr/bin/fuser   /bin
-        mv -v /usr/bin/killall /bin
-    } >>"$LOGFILE" 2>&1
-}
-
 source "$(dirname "$0")"/../common/common_exec

@@ -53,13 +53,18 @@ setup_lfs_user()
         echo 'lfs:lfs'| chpasswd
     fi
 
-    # Set up tools and lfs-source at LFS root
+    chown -v lfs $LFS/{usr{,/*},lib,var,etc,bin,sbin,tools}
+    case $(uname -m) in
+        x86_64) chown -v lfs $LFS/lib64 ;;
+    esac
+
+    # Set up tools and sources at LFS root
     [ ! -d "$LFS"/tools ] && mkdir -p "$LFS"/tools
-    [ ! -d "$LFS"/lfs-source ] && mkdir -p "$LFS"/lfs-source
+    [ ! -d "$LFS"/sources ] && mkdir -p "$LFS"/sources
     [ ! -L /tools ] && ln -s "$LFS"/tools /
-    [ ! -L /lfs-source ] && ln -s "$LFS"/lfs-source /
+    [ ! -L /sources ] && ln -s "$LFS"/sources /
     chown lfs:lfs "$LFS"
-    chown lfs:lfs -R "$LFS"/tools "$LFS"/lfs-source
+    chown lfs:lfs -R "$LFS"/tools "$LFS"/sources
 
     # Set up link and permissions to the build repo
     [ -L /home/lfs/automate-lfs-build ] && rm /home/lfs/automate-lfs-build
@@ -76,20 +81,42 @@ setup_lfs_bash()
     printf "Setting up bash for lfs user ..."
 
     # Create bash_profile
-    su lfs - -c "cat > ~/.bash_profile << EOF
+    cat > /home/lfs/.bash_profile << EOF
 exec env -i HOME=\$HOME TERM=\$TERM PS1='\u:\w\$ ' /bin/bash
-EOF"
+EOF
+    chown lfs:lfs /home/lfs/.bash_profile
 
     # Create bashrc
-    su lfs - -c "cat > ~/.bashrc << EOF
+    cat > /home/lfs/.bashrc << EOF
 set +h
 umask 022
 LFS=$LFS
 LC_ALL=POSIX
 LFS_TGT=$(uname -m)-lfs-linux-gnu
-PATH=/tools/bin:/bin:/usr/bin
-export LFS LC_ALL LFS_TGT PATH
-EOF"
+PATH=/usr/bin
+if [ ! -L /bin ]; then PATH=/bin:\$PATH; fi
+PATH=\$LFS/tools/bin:\$PATH
+CONFIG_SITE=\$LFS/usr/share/config.site
+export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
+EOF
+    chown lfs:lfs /home/lfs/.bashrc
+
+    echo "done"
+}
+
+setup_dirs()
+{
+    printf "Setting up dirs for lfs toolchain ..."
+
+    mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
+
+    for i in bin lib sbin; do
+        [ ! -L $LFS/$i ] && ln -svf usr/$i $LFS/$i
+    done
+
+    case $(uname -m) in
+        x86_64) mkdir -pv $LFS/lib64 ;;
+    esac
 
     echo "done"
 }
@@ -101,6 +128,7 @@ EOF"
 assert_is_root
 validate_lfs_mountpoint
 echo "---------------- LFS SETUP ----------------"
+setup_dirs
 setup_lfs_user
 setup_lfs_bash
 echo "-------------------------------------------"

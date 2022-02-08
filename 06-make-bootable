@@ -31,14 +31,14 @@ make_bootable_as_chroot()
     fi
     lfs_drive=${lfs_partition:0:8}
 
-    chroot "$LFS" /tools/bin/env -i                 \
-    HOME=/root                                      \
-    TERM="$TERM"                                    \
-    PS1='(lfs chroot) \u:\w\$ '                     \
-    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin   \
-    IS_CHROOT="1"                                   \
-    LFS_DRIVE="$lfs_drive"                          \
-    /tools/bin/bash --login +h <<"EOM"
+    chroot "$LFS" /usr/bin/env -i \
+        HOME=/root \
+        TERM="$TERM" \
+        PS1='(lfs chroot) \u:\w\$ ' \
+        PATH=/usr/bin:/usr/sbin \
+        IS_CHROOT="1" \
+        LFS_DRIVE="$lfs_drive" \
+        /bin/bash --login <<"EOM"
     if [ ! -d "/automate-lfs-build" ]; then
         echo "Cannot read automate-lfs-build dir"
     fi
@@ -59,6 +59,9 @@ make_bootable_as_chroot()
     setup_grub && hr
     info "END - $(date -uR)"
 EOM
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
 
     unset $IS_CHROOT
     umount_psudoroot
@@ -71,6 +74,9 @@ main()
     echo "Entering chroot environment"
     echo "-------------------------------------------"
     make_bootable_as_chroot
+    if [ $? -ne 0 ]; then
+        fatal "Error with system configuration steps"
+    fi
 
     echo "Congratulations\! Everything is done and you are ready to boot LFS"
     echo "One last thing to do though: set the root password."

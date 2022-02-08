@@ -6,17 +6,19 @@ NAME=openssl
 VERSION=$OPENSSL_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://openssl.org/source/$TARFILE"
-mSBU=1700
+mSBU=2200
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir -p build
-    cd build
     BUILD_PATH=$(pwd)
-    ../config -v --prefix=/usr     \
-        --openssldir=/etc/ssl   \
-        --libdir=lib shared zlib-dynamic >>"$LOGFILE" 2>&1
+
+    ./config \
+        --prefix=/usr \
+        --openssldir=/etc/ssl \
+        --libdir=lib \
+        shared \
+        zlib-dynamic >>"$LOGFILE" 2>&1
 }
 
 post_build()
@@ -34,8 +36,9 @@ build_install()
 post_install()
 {
     {
-        mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.1a
-        cp -vfr ../doc/* /usr/share/doc/openssl-1.1.1a
+        cd "$BUILD_PATH"
+        mv -v /usr/share/doc/openssl /usr/share/doc/openssl-$VERSION
+        cp -vfr doc/* /usr/share/doc/openssl-$VERSION
     } >>"$LOGFILE" 2>&1
 }
 

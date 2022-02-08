@@ -11,17 +11,31 @@ mSBU=400
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
     BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/tools \
+    ./configure \
+        --prefix=/usr \
+        --build=$(support/config.guess) \
+        --host=$LFS_TGT \
         --without-bash-malloc >>"$LOGFILE" 2>&1
+}
+
+build()
+{
+    cd "$BUILD_PATH"
+    # Don't use default jobs; only use one
+    make -j1 >>"$LOGFILE" 2>&1
+}
+
+build_install()
+{
+    cd "$BUILD_PATH"
+    make $MAKE_JOBS DESTDIR=$LFS install >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
-    ln -svf bash /tools/bin/sh >>"$LOGFILE" 2>&1
+    ln -svf bash $LFS/bin/sh >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

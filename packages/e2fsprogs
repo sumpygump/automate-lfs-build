@@ -5,8 +5,8 @@ source "$(dirname "$0")"/../common/common_source
 NAME=e2fsprogs
 VERSION=$E2FSPROGS_VER
 TARFILE=$NAME-$VERSION.tar.gz
-FETCH_URL="https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.44.5/$TARFILE"
-mSBU=1600
+FETCH_URL="https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v$VERSION/$TARFILE"
+mSBU=4400
 
 configure()
 {
@@ -15,27 +15,32 @@ configure()
     cd build
     BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr  \
-        --bindir=/bin           \
-        --with-root-prefix=""   \
-        --enable-elf-shlibs >>"$LOGFILE" 2>&1
+    ../configure \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --enable-elf-shlibs \
+        --disable-libblkid \
+        --disable-libuuid \
+        --disable-uuidd \
+        --disable-fsck >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     cd $BUILD_PATH
-    make $SILENT_MAKE $MAKE_JOBS install-libs >>"$LOGFILE" 2>&1
-    [ $? -ne 0 ] && return 1
 
     {
-    chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+    # Remove useless static libraries
+    rm -fv /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+
+    # Update system-wide dir
     gunzip -v /usr/share/info/libext2fs.info.gz
     install-info --dir-file=/usr/share/info/dir /usr/share/info/libext2fs.info
+
+    # Create additional documentation
     makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
     install -v -m644 doc/com_err.info /usr/share/info
     install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
-    makeinfo -o      doc/com_err.info lib/et/com_err.texinfo
-    cp ../contrib/populate-extfs.sh /usr/sbin/
     }  >>"$LOGFILE" 2>&1
 }
 

@@ -11,19 +11,26 @@ mSBU=300
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
-
     BUILD_PATH=$(pwd)
-    ../configure --prefix=/usr              \
-        --disable-static                    \
-        --docdir=/usr/share/doc/mpc-1.1.0 >>"$LOGFILE" 2>&1
+
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --docdir=/usr/share/doc/mpc-$VERSION >>"$LOGFILE" 2>&1
 }
 
 post_build()
 {
-     cd "$BUILD_PATH"
-     make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
+    cd "$BUILD_PATH"
+    make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
+
+    # Test
+    make check > /tmp/mpc-check-log
+    tests_passed=$(awk '/# PASS:/{total+=$3} ; END{print total}' /tmp/mpc-check-log)
+    if [ $tests_passed -ne 69 ]; then
+        echo "Expected 69 tests to pass, but only $tests_passed passed." >> "$LOGFILE"
+        return 1
+    fi
 }
 
 post_install()

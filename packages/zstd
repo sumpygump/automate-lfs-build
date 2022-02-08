@@ -1,0 +1,29 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=zstd
+VERSION=$ZSTD_VER
+TARFILE=$NAME-$VERSION.tar.gz
+FETCH_URL="https://github.com/facebook/zstd/releases/download/v$VERSION/$TARFILE"
+mSBU=1400
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+}
+
+build_install()
+{
+    cd $BUILD_PATH
+    make $MAKE_JOBS prefix=/usr install >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+    # Remove the static library
+    rm -vf /usr/lib/libzstd.a >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec

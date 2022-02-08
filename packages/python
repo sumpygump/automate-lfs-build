@@ -5,9 +5,9 @@ source "$(dirname "$0")"/../common/common_source
 NAME=Python
 VERSION=$PYTHON_VER
 TARFILE=$NAME-$VERSION.tar.xz
-FETCH_URL="https://www.python.org/ftp/python/3.7.2/$TARFILE"
-FETCH_PYTHON_DOCS="https://docs.python.org/ftp/python/doc/3.7.2/python-3.7.2-docs-html.tar.bz2"
-mSBU=1000
+FETCH_URL="https://www.python.org/ftp/python/$VERSION/$TARFILE"
+FETCH_PYTHON_DOCS="https://docs.python.org/ftp/python/doc/$VERSION/python-$VERSION-docs-html.tar.bz2"
+mSBU=4400
 
 provide_source_urls()
 {
@@ -24,27 +24,32 @@ fetch()
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --enable-shared --with-system-expat --with-system-ffi --with-ensurepip=yes >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --enable-shared \
+        --with-system-expat \
+        --with-system-ffi \
+        --with-ensurepip=yes \
+        --enable-optimizations >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     cd "$BUILD_PATH"
     {
+        install -v -dm755 /usr/share/doc/python-$VERSION/html
+
         local docfile=$(basename $FETCH_PYTHON_DOCS)
         cp -vf "$SRCDIR/$docfile" "$WORKBENCH/$docfile"
-        chmod -v 755 /usr/lib/libpython3.7m.so
-        chmod -v 755 /usr/lib/libpython3.so
-        install -v -dm755 /usr/share/doc/python-3.7.2/html
 
         tar \
             --strip-components=1  \
             --no-same-owner \
             --no-same-permissions \
-            -C /usr/share/doc/python-3.7.2/html \
-            -xvf "$WORKBENCH"/python-3.7.2-docs-html.tar.bz2
+            -C /usr/share/doc/python-$VERSION/html \
+            -xvf "$WORKBENCH"/python-$VERSION-docs-html.tar.bz2
         rm "$WORKBENCH/$docfile"
 
     } >>"$LOGFILE" 2>&1

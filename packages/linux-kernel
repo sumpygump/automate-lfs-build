@@ -5,7 +5,7 @@ source "$(dirname "$0")"/../common/common_source
 NAME=linux
 VERSION=$LINUX_VER
 TARFILE=$NAME-$VERSION.tar.xz
-FETCH_URL="https://www.kernel.org/pub/linux/kernel/v4.x/$TARFILE"
+FETCH_URL="https://www.kernel.org/pub/linux/kernel/v5.x/$TARFILE"
 mSBU=9200
 
 configure()
@@ -37,7 +37,7 @@ build_install()
     make install >>"$LOGFILE" 2>&1
 
     # Rename the vmlinuz file to be specific versioned
-    mv -vp /boot/vmlinuz /boot/vmlinuz-4.20.12-lfs-8.4 >>"$LOGFILE" 2>&1
+    mv -vp /boot/vmlinuz /boot/vmlinuz-$VERSION-lfs-11.0 >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

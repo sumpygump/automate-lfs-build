@@ -1,0 +1,228 @@
+#!/bin/bash
+
+#----------------------------------------------------------------------------#
+#  __    _____ _____
+# |  |  |   __|   __|
+# |  |__|   __|__   |
+# |_____|__|  |_____|
+#
+# Automate LFS Build
+#----------------------------------------------------------------------------#
+# (C) 2019-2022 Ranjith Gowda, Jansen Price
+# https://github.com/ranjithum/automate-lfs-build
+#----------------------------------------------------------------------------#
+# Usage: ./05-build-packages
+# This script will build the target packages for the lfs system. It must be run
+# as root user. It will run all the compilation in a chroot environment for
+# isolation.
+#
+# By default it will attempt to make a linux system with packages suggested by
+# LFS, but if you set the environment variable PKGS_BUSYBOX=1 it will attempt
+# to create a system using busy box (less packages to build).
+#----------------------------------------------------------------------------#
+
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+source $REPO_ROOT/common/common_utils
+source $REPO_ROOT/common/common_source
+source $REPO_ROOT/common/common_chrooted
+
+if [ "$PKGS_BUSYBOX" == "1" ]; then
+    PACKAGES="glibc flex zlib elfutils busybox openssl grub \
+        pkg-config e2fsprogs linux-kernel"
+else
+    PACKAGES="man-pages iana-etc glibc zlib bzip2 xz zstd file readline m4 bc \
+        flex tcl expect dejagnu binutils gmp mpfr mpc attr acl libcap shadow \
+        gcc pkg-config ncurses sed psmisc gettext bison grep bash libtool gdbm \
+        gperf expat inetutils less perl xmlparser intltool autoconf automake \
+        kmod elfutils libffi openssl python ninja meson coreutils check diffutils \
+        gawk findutils groff grub gzip iproute kbd libpipeline make patch tar \
+        texinfo vim eudev man-db procps-ng util-linux e2fsprogs sysklogd sysvinit \
+        lfs-bootscripts"
+fi
+
+assert_is_root()
+{
+    if [ "$EUID" -ne 0 ]; then
+        fatal "Please run as root user. (Use \`sudo su - root\`)"
+    fi
+
+    if [ -z "$LFS" ]; then
+        fatal "Environment variable LFS is not set!"
+    fi
+}
+
+build_packages_under_chroot()
+{
+    mount_psudoroot
+
+    chroot "$LFS" /usr/bin/env -i \
+    HOME=/root                    \
+    TERM="$TERM"                  \
+    PS1='(lfs chroot) \u:\w\$ '   \
+    PATH=/usr/bin:/usr/sbin       \
+    PACKAGES="$PACKAGES"          \
+    IS_CHROOT="1"                 \
+    /bin/bash --login +h <<"EOM"
+    if [ ! -d "/automate-lfs-build" ]; then
+        echo "Cannot read automate-lfs-build dir"
+        exit 1
+    fi
+    source /automate-lfs-build/common/common_chrooted
+    cd /automate-lfs-build
+    for package in $PACKAGES
+    do
+        info "BEGIN $package - $(date -uR)"
+        /bin/bash packages/$package
+        if [ $? -ne 0 ]; then
+            fatal "Execution of $package failed."
+        fi
+    done
+    info "END - $(date -uR)"
+EOM
+
+    umount_psudoroot
+}
+
+strip_packages()
+{
+    printf "Stripping unnecessary packages ..."
+    {
+        save_usrlib="$(cd /usr/lib; ls ld-linux*)
+            libc.so.6
+            libthread_db.so.1
+            libquadmath.so.0.0.0
+            libstdc++.so.6.0.29
+            libitm.so.1.0.0
+            libatomic.so.1.2.0"
+
+        cd /usr/lib
+
+        for LIB in $save_usrlib; do
+            objcopy --only-keep-debug $LIB $LIB.dbg
+            cp $LIB /tmp/$LIB
+            strip --strip-unneeded /tmp/$LIB
+            objcopy --add-gnu-debuglink=$LIB.dbg /tmp/$LIB
+            install -vm755 /tmp/$LIB /usr/lib
+            rm /tmp/$LIB
+        done
+
+        online_usrbin="bash find strip"
+        online_usrlib="libbfd-2.37.so
+            libhistory.so.8.1
+            libncursesw.so.6.2
+            libm.so.6
+            libreadline.so.8.1
+            libz.so.1.2.11
+            $(cd /usr/lib; find libnss*.so* -type f)"
+
+        for BIN in $online_usrbin; do
+            cp /usr/bin/$BIN /tmp/$BIN
+            strip --strip-unneeded /tmp/$BIN
+            install -vm755 /tmp/$BIN /usr/bin
+            rm /tmp/$BIN
+        done
+
+        for LIB in $online_usrlib; do
+            cp /usr/lib/$LIB /tmp/$LIB
+            strip --strip-unneeded /tmp/$LIB
+            install -vm755 /tmp/$LIB /usr/lib
+            rm /tmp/$LIB
+        done
+
+        #for i in $(find /usr/lib -type f -name \*.so* ! -name \*dbg) \
+        #         $(find /usr/lib -type f -name \*.a)                 \
+        #         $(find /usr/{bin,sbin,libexec} -type f); do
+        #    case "$online_usrbin $online_usrlib $save_usrlib" in
+        #        *$(basename $i)* )
+        #            ;;
+        #        * ) strip --strip-unneeded $i
+        #            ;;
+        #    esac
+        #done
+
+        unset BIN LIB save_usrlib online_usrbin online_usrlib
+
+        # libtool archives unneeded and potentially harmful, remove
+        find /usr/lib /usr/libexec -name \*.la -delete
+
+        # compiler from previous steps not needed anymore
+        find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
+    } >> /dev/null 2>&1
+    echo "done"
+}
+
+download_source_file()
+{
+    local url=$1
+    local filename=$2
+    local _filename=$(basename $1)
+
+    if [ ! -f "$SRCDIR/$filename" ] && [ ! -f "$SRCDIR/$_filename" ]; then
+        default_fetch "$url"
+        if [ $? -ne 0 ]; then
+            error "Problem downloading $url"
+        fi
+    else
+        printf "."
+    fi
+}
+
+prefetch_packages()
+{
+    # We need a way to fetch the source code or make sure the source code is
+    # already there for the defined packages the user wants to install. We do
+    # this by including the packages/<package> file for each package, but don't
+    # execute them but just extract the variables and functions from those
+    # files and then we can use that to check the files or download them
+
+    printf "Prefetching source code for packages "
+    {
+    source ./common/pkgversion # Get defined versions of packages
+    source ./common/common_source
+
+    for package in $PACKAGES
+    do
+        # This will source the file but take off the shebang (first line)
+        # And strip out the 'common_source' and 'common_exec' statements
+        # So we are just left with the definitions of vars and functions
+        source <(cat packages/$package | tail -n+2 | grep -v 'common_')
+
+        if type provide_source_urls >/dev/null 2>&1; then
+            # This package has multiple required source file so download all of them
+            urls=$(provide_source_urls)
+            for url in $urls; do
+                download_source_file $url $(basename $url)
+            done
+        else
+            # Download just the single source file for this package
+            download_source_file $FETCH_URL $TARFILE
+        fi
+        unset -f provide_source_urls
+    done
+
+    }
+    echo "done"
+}
+
+# -----------------
+# Main
+# -----------------
+assert_is_root
+echo "--------------- LFS PACKAGES --------------"
+echo "This script will enter a chroot environment"
+echo "And attempt to build all packages for the LFS system"
+echo "Sources are downloaded to $SRCDIR"
+echo "Logs are in $LOGPATH"
+echo "Completed steps are written to $FILE_DB"
+echo "Package list to build:"
+printf "  %s %s %s %s %s %s %s\n" $PACKAGES
+echo "-------------------------------------------"
+
+prefetch_packages
+
+echo "-------------------------------------------"
+
+build_packages_under_chroot
+strip_packages
+
+echo "-------------------------------------------"

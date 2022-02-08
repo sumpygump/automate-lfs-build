@@ -11,19 +11,27 @@ mSBU=900
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --disable-static >>"$LOGFILE" 2>&1
+    ./configure --prefix=/usr >>"$LOGFILE" 2>&1
+
+    sed -e 's/__attribute_nonnull__/__nonnull/' \
+        -i gnulib/lib/malloc/dynarray-skeleton.c >> "$LOGFILE" 2>&1
 }
 
 post_install()
 {
     cd "$BUILD_PATH"
-    make $SILENT_MAKE $MAKE_JOBS TEXMF=/usr/share/texmf install-tex  >>"$LOGFILE" 2>&1
+    # Install components belonging in a TeX installation
+    make $SILENT_MAKE $MAKE_JOBS TEXMF=/usr/share/texmf install-tex >>"$LOGFILE" 2>&1
+
+    # Recreate the docs
     {
     pushd /usr/share/info
     rm -v dir
-    for f in *;   do install-info $f dir 2>/dev/null; done
+    for f in *
+        do install-info $f dir 2>/dev/null
+    done
     popd
     } >>"$LOGFILE" 2>&1
 }

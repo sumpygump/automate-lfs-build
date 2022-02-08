@@ -4,14 +4,27 @@ source "$(dirname "$0")"/../common/common_source
 
 NAME=iana-etc
 VERSION=$IANAETC_VER
-TARFILE=$NAME-$VERSION.tar.bz2
+TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="http://anduin.linuxfromscratch.org/LFS/$TARFILE"
+FETCH_URL="https://github.com/Mic92/iana-etc/releases/download/$VERSION/$TARFILE"
 mSBU=50
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
+}
+
+build()
+{
+    # do nothing
+    :
+}
+
+build_install()
+{
+    cd $BUILD_PATH
+    cp services protocols /etc
 }
 
 source "$(dirname "$0")"/../common/common_exec

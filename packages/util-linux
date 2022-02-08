@@ -6,34 +6,29 @@ NAME=util-linux
 VERSION=$UTILLINUX_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/utils/util-linux/v2.33/$TARFILE"
-mSBU=1500
-
-pre_configure()
-{
-    mkdir -p /var/lib/hwclock
-    rm -f /usr/include/{blkid,libmount,uuid}
-}
+mSBU=1100
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
     BUILD_PATH=$(pwd)
 
-    ../configure ADJTIME_PATH=/var/lib/hwclock/adjtime   \
-            --docdir=/usr/share/doc/util-linux-2.33.1 \
-            --disable-chfn-chsh  \
-            --disable-login      \
-            --disable-nologin    \
-            --disable-su         \
-            --disable-setpriv    \
-            --disable-runuser    \
-            --disable-pylibmount \
-            --disable-static     \
-            --without-python     \
-            --without-systemd    \
-            --without-systemdsystemunitdir >>"$LOGFILE" 2>&1
+    ./configure \
+        ADJTIME_PATH=/var/lib/hwclock/adjtime \
+        --libdir=/usr/lib \
+        --docdir=/usr/share/doc/util-linux-$VERSION \
+        --disable-chfn-chsh \
+        --disable-login \
+        --disable-nologin \
+        --disable-su \
+        --disable-setpriv \
+        --disable-runuser \
+        --disable-pylibmount \
+        --disable-static \
+        --without-python \
+        --without-systemd \
+        --without-systemdsystemunitdir \
+        runstatedir=/run >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

@@ -6,9 +6,9 @@ NAME=glibc
 VERSION=$GLIBC_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/glibc/$TARFILE"
-FETCH_PATCH="https://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.29-fhs-1.patch"
-FETCH_TZDATA="https://www.iana.org/time-zones/repository/releases/tzdata2018i.tar.gz"
-mSBU=22000
+FETCH_PATCH="https://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.34-fhs-1.patch"
+FETCH_TZDATA="https://www.iana.org/time-zones/repository/releases/tzdata2021a.tar.gz"
+mSBU=24000
 
 provide_source_urls() {
     echo $FETCH_URL $FETCH_PATCH $FETCH_TZDATA
@@ -36,27 +36,16 @@ extract()
 patchup()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
+
+    # First fix a security problem identified upstream
+    sed -e '/NOTIFY_REMOVED)/s/)/ \&\& data.attr != NULL)/' \
+        -i sysdeps/unix/sysv/linux/mq_notify.c
+
+    # Prevent a failure during build_install; skip tests that fail on a chroot system
+    #sed -i 's/$name ne "nss_test1"/$name ne "nss_test1" \&\& $name ne "nss_test2" \&\& $name ne "nss_nis" \&\& $name ne "nss_nisplus" \&\& $name ne "nss_dns" \&\& $name ne "nsl" \&\& $name ne "nss_files"/' scripts/test-installation.pl
+
     local patch_file=$(basename $FETCH_PATCH)
     patch -Np1 -i "$SRCDIR/$patch_file" >>"$LOGFILE" 2>&1
-}
-
-pre_configure()
-{
-    {
-    ln -sfv /tools/lib/gcc /usr/lib
-
-    case $(uname -m) in
-    i?86)    GCC_INCDIR=/usr/lib/gcc/$(uname -m)-pc-linux-gnu/8.2.0/include
-            ln -sfv ld-linux.so.2 /lib/ld-lsb.so.3
-    ;;
-    x86_64) GCC_INCDIR=/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.0/include
-            ln -sfv ../lib/ld-linux-x86-64.so.2 /lib64
-            ln -sfv ../lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3
-    ;;
-    esac
-
-    rm -f /usr/include/limits.h
-    } >>"$LOGFILE" 2>&1
 }
 
 configure()
@@ -65,88 +54,111 @@ configure()
     mkdir build
     cd build
     BUILD_PATH=$(pwd)
-    CC="gcc -isystem $GCC_INCDIR -isystem /usr/include" \
-    ../configure --prefix=/usr                          \
-        --disable-werror --enable-kernel=3.2            \
-        --enable-stack-protector=strong                 \
-        libc_cv_slibdir=/lib  >>"$LOGFILE" 2>&1
-    ret_val=$?
-    unset GCC_INCDIR
-    return $ret_val
+
+    ../configure --prefix=/usr \
+        --disable-werror \
+        --enable-kernel=3.2 \
+        --enable-stack-protector=strong \
+        --with-headers=/usr/include \
+        libc_cv_slibdir=/usr/lib >>"$LOGFILE" 2>&1
 }
 
 post_build()
 {
     cd "$BUILD_PATH"
+    # Prevent glibc from complaining about this file not being there
     touch /etc/ld.so.conf
-    sed '/test-installation/s@$(PERL)@echo not running@' -i Makefile
+
+    # Skip the sanity check since it is uneeded and fails in the LFS partial environment
+    sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make $SILENT_MAKE $MAKE_JOBS -ik install >>"$LOGFILE" 2>&1
+    make -j1 install >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
     {
+    # Fix hardcoded path to executable loader in ldd
+    sed '/RTLDLIST=/s@/usr@@g' -i /usr/bin/ldd
+
+    # Install config file and runtime dir for nscd
     cp -v ./nscd/nscd.conf /etc/nscd.conf
     mkdir -pv /var/cache/nscd
+
+    # Install locales
     mkdir -pv /usr/lib/locale
-    localedef -i POSIX -f UTF-8 C.UTF-8 2> /dev/null || true && 
-    localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8 &&
-    localedef -i de_DE -f ISO-8859-1 de_DE && 
-    localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro &&
-    localedef -i de_DE -f UTF-8 de_DE.UTF-8 &&
-    localedef -i el_GR -f ISO-8859-7 el_GR &&
-    localedef -i en_GB -f UTF-8 en_GB.UTF-8 &&
-    localedef -i en_HK -f ISO-8859-1 en_HK &&
-    localedef -i en_PH -f ISO-8859-1 en_PH &&
-    localedef -i en_US -f ISO-8859-1 en_US &&
-    localedef -i en_US -f UTF-8 en_US.UTF-8 &&
-    localedef -i es_MX -f ISO-8859-1 es_MX &&
-    localedef -i fa_IR -f UTF-8 fa_IR &&
-    localedef -i fr_FR -f ISO-8859-1 fr_FR &&
-    localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro &&
-    localedef -i fr_FR -f UTF-8 fr_FR.UTF-8 &&
-    localedef -i it_IT -f ISO-8859-1 it_IT &&
-    localedef -i it_IT -f UTF-8 it_IT.UTF-8 &&
-    localedef -i ja_JP -f EUC-JP ja_JP &&
-    localedef -i ja_JP -f SHIFT_JIS ja_JP.SIJS 2> /dev/null || true &&
-    localedef -i ja_JP -f UTF-8 ja_JP.UTF-8 &&
-    localedef -i ru_RU -f KOI8-R ru_RU.KOI8-R && 
-    localedef -i ru_RU -f UTF-8 ru_RU.UTF-8 && 
-    localedef -i tr_TR -f UTF-8 tr_TR.UTF-8 &&
-    localedef -i zh_CN -f GB18030 zh_CN.GB18030 &&
+    localedef -i POSIX -f UTF-8 C.UTF-8 2> /dev/null || true
+    localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8
+    localedef -i de_DE -f ISO-8859-1 de_DE
+    localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
+    localedef -i de_DE -f UTF-8 de_DE.UTF-8
+    localedef -i el_GR -f ISO-8859-7 el_GR
+    localedef -i en_GB -f ISO-8859-1 en_GB
+    localedef -i en_GB -f UTF-8 en_GB.UTF-8
+    localedef -i en_HK -f ISO-8859-1 en_HK
+    localedef -i en_PH -f ISO-8859-1 en_PH
+    localedef -i en_US -f ISO-8859-1 en_US
+    localedef -i en_US -f UTF-8 en_US.UTF-8
+    localedef -i es_ES -f ISO-8859-15 es_ES@euro
+    localedef -i es_MX -f ISO-8859-1 es_MX
+    localedef -i fa_IR -f UTF-8 fa_IR
+    localedef -i fr_FR -f ISO-8859-1 fr_FR
+    localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
+    localedef -i fr_FR -f UTF-8 fr_FR.UTF-8
+    localedef -i is_IS -f ISO-8859-1 is_IS
+    localedef -i is_IS -f UTF-8 is_IS.UTF-8
+    localedef -i it_IT -f ISO-8859-1 it_IT
+    localedef -i it_IT -f ISO-8859-15 it_IT@euro
+    localedef -i it_IT -f UTF-8 it_IT.UTF-8
+    localedef -i ja_JP -f EUC-JP ja_JP
+    localedef -i ja_JP -f SHIFT_JIS ja_JP.SIJS 2> /dev/null || true
+    localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
+    localedef -i nl_NL@euro -f ISO-8859-15 nl_NL@euro
+    localedef -i ru_RU -f KOI8-R ru_RU.KOI8-R
+    localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
+    localedef -i se_NO -f UTF-8 se_NO.UTF-8
+    localedef -i ta_IN -f UTF-8 ta_IN.UTF-8
+    localedef -i tr_TR -f UTF-8 tr_TR.UTF-8
+    localedef -i zh_CN -f GB18030 zh_CN.GB18030
     localedef -i zh_HK -f BIG5-HKSCS zh_HK.BIG5-HKSCS
+    localedef -i zh_TW -f UTF-8 zh_TW.UTF-8
 
-    make $SILENT_MAKE $MAKE_JOBS -ik localedata/install-locales
+    make $SILENT_MAKE $MAKE_JOBS localedata/install-locales
+    localedef -i POSIX -f UTF-8 C.UTF-8 2> /dev/null || true
+    localedef -i ja_JP -f SHIFT_JIS ja_JP.SIJS 2> /dev/null || true
 
+    # 8.5.2 Configuring glibc
+
+    # Add nsswitch.conf file
     cat > /etc/nsswitch.conf << "EOF"
-    # Begin /etc/nsswitch.conf
+# Begin /etc/nsswitch.conf
 
-    passwd: files
-    group: files
-    shadow: files
+passwd: files
+group: files
+shadow: files
 
-    hosts: files dns
-    networks: files
+hosts: files dns
+networks: files
 
-    protocols: files
-    services: files
-    ethers: files
-    rpc: files
+protocols: files
+services: files
+ethers: files
+rpc: files
 
-    # End /etc/nsswitch.conf
+# End /etc/nsswitch.conf
 EOF
 
+    # Add time zone data
     cd tzdata
     ZONEINFO=/usr/share/zoneinfo
     mkdir -pv $ZONEINFO/{posix,right}
     for tz in etcetera southamerica northamerica europe africa antarctica  \
-        asia australasia backward pacificnew systemv
+        asia australasia backward
     do
         zic -L /dev/null   -d $ZONEINFO       $tz
         zic -L /dev/null   -d $ZONEINFO/posix $tz
@@ -156,29 +168,22 @@ EOF
     cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO &&
         zic -d $ZONEINFO -p America/New_York &&
     unset ZONEINFO
+
+    # Set the timezone
     ln -svf /usr/share/zoneinfo/UTC /etc/localtime
     cd -
 
+    # Configure the dynamic loader
     cat > /etc/ld.so.conf << "EOF"
-    # Begin /etc/ld.so.conf
-    /usr/local/lib
-    /opt/lib
+# Begin /etc/ld.so.conf
+/usr/local/lib
+/opt/lib
 
-    # Add an include directory
-    include /etc/ld.so.conf.d/*.conf
+# Add an include directory
+include /etc/ld.so.conf.d/*.conf
 EOF
 
     mkdir -pv /etc/ld.so.conf.d
-    mv -v /tools/bin/{ld,ld-old}
-    mv -v /tools/$(uname -m)-pc-LINUX-gnu/bin/{ld,ld-old} 
-    mv -v /tools/bin/{ld-new,ld} 
-    ln -sv /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
-
-    gcc -dumpspecs | sed -e 's@/tools@@g'                   \
-        -e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}' \
-        -e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' >      \
-        `dirname $(gcc --print-libgcc-file-name)`/specs
-
     } >>"$LOGFILE" 2>&1
 }
 
@@ -187,11 +192,11 @@ test_build()
     {
     echo 'int main(){}' > dummy.c
     cc dummy.c -v -Wl,--verbose &> dummy.log
-    if ! readelf -l a.out | grep ': /lib'; then
+    if [ ! readelf -l a.out | grep ': /lib' ]; then
         return 1
     fi
 
-    if ! grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log; then
+    if [ ! grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log ]; then
         return 1
     fi
 

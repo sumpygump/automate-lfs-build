@@ -11,9 +11,11 @@ mSBU=50
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1 >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --docdir=/usr/share/doc/gperf-$VERSION >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

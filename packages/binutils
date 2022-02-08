@@ -6,7 +6,29 @@ NAME=binutils
 VERSION=$BINUTILS_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="http://ftp.gnu.org/gnu/binutils/$TARFILE"
-mSBU=6900
+FETCH_PATCH="https://www.linuxfromscratch.org/patches/lfs/11.0/binutils-2.37-upstream_fix-1.patch"
+mSBU=6300
+
+provide_source_urls()
+{
+    echo $FETCH_URL $FETCH_PATCH
+    return 0
+}
+
+fetch()
+{
+    warn_if_missing $FETCH_URL $TARFILE
+    warn_if_missing $FETCH_PATCH $(basename $FETCH_PATCH)
+}
+
+patchup()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    patchfile=$(basename $FETCH_PATCH)
+    patch -Np1 -i "$SRCDIR/$patchfile" >>"$LOGFILE" 2>&1
+    sed -i '63d' etc/texi2pod.pl
+    find -name \*.1 -delete
+}
 
 configure()
 {
@@ -15,13 +37,14 @@ configure()
     cd build
     BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr  \
-        --enable-gold           \
-        --enable-ld=default     \
-        --enable-plugins        \
-        --enable-shared         \
-        --disable-werror        \
-        --enable-64-bit-bfd     \
+    ../configure \
+        --prefix=/usr \
+        --enable-gold \
+        --enable-ld=default \
+        --enable-plugins \
+        --enable-shared \
+        --disable-werror \
+        --enable-64-bit-bfd \
         --with-system-zlib  >>"$LOGFILE" 2>&1
 }
 
@@ -34,7 +57,13 @@ build()
 build_install()
 {
     cd "$BUILD_PATH"
-    make $SILENT_MAKE $MAKE_JOBS tooldir=/usr install >>"$LOGFILE" 2>&1
+    make $SILENT_MAKE -j1 tooldir=/usr install >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+    # Remove useless static libraries
+    rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes}.a >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

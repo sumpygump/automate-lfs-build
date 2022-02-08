@@ -6,7 +6,7 @@ NAME=kbd
 VERSION=$KBD_VER
 TARFILE=$NAME-$VERSION.tar.xz
 FETCH_URL="https://www.kernel.org/pub/linux/utils/kbd/$TARFILE"
-FETCH_PATCH="http://www.linuxfromscratch.org/patches/lfs/8.4/kbd-2.0.4-backspace-1.patch"
+FETCH_PATCH="https://www.linuxfromscratch.org/patches/lfs/11.0/kbd-2.4.0-backspace-1.patch"
 mSBU=100
 
 provide_source_urls()
@@ -24,7 +24,8 @@ fetch()
 patchup()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    patch -Nfp1 -i "$SRCDIR"/kbd-2.0.4-backspace-1.patch >>"$LOGFILE" 2>&1
+    local patchfile=$(basename $FETCH_PATCH)
+    patch -Nfp1 -i "$SRCDIR/$patchfile" >>"$LOGFILE" 2>&1
 
     sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
     sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in
@@ -33,9 +34,17 @@ patchup()
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    PKG_CONFIG_PATH=/tools/lib/pkgconfig ../configure --prefix=/usr --disable-vlock >>"$LOGFILE" 2>&1
+    ./configure --prefix=/usr --disable-vlock >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+    {
+    mkdir -vp /usr/share/doc/kbd-$VERSION
+    cp -R -vf docs/doc/* /usr/share/doc/kbd-$VERSION
+    } >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

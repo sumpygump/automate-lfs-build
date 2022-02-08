@@ -5,42 +5,25 @@ source "$(dirname "$0")"/../common/common_source
 NAME=expat
 VERSION=$EXPAT_VER
 TARFILE=$NAME-$VERSION.tar.bz2
-# FETCH_URL="https://prdownloads.sourceforge.net/expat/$TARFILE"
-FETCH_URL="https://prdownloads.sourceforge.net/expat/expat-2.2.6-RENAMED-VULNERABLE-PLEASE-USE-2.4.1-INSTEAD.tar.bz2"
+FETCH_URL="https://prdownloads.sourceforge.net/expat/$TARFILE"
 mSBU=100
-
-fetch()
-{
-    if [ -f "$SRCDIR/$TARFILE" ]; then
-        # We already have the file we want
-        return 0
-    fi
-
-    # Because of the vulnerability name change of this tarball, need special
-    # logic to rename the downloaded file to the expected target tarfile
-    local alt_filename=$(basename $FETCH_URL)
-    if [ ! -f "$SRCDIR/$alt_filename" ]; then
-        echo "Package $NAME source code is not available.. Please download it manually and place it inside /lfs-source folder"
-        echo $FETCH_URL
-        return 1
-    fi
-
-    mv "$SRCDIR/$alt_filename" "$SRCDIR/$TARFILE"
-    return 0
-}
-
-patchup()
-{
-    cd "$WORKBENCH/$NAME-$VERSION"
-    sed -i 's|usr/bin/env |bin/|' run.sh.in
-}
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build; cd build; BUILD_PATH=$(pwd)
+    BUILD_PATH=$(pwd)
 
-    ../configure --prefix=/usr --disable-static --docdir=/usr/share/doc/expat-2.2.6 >>"$LOGFILE" 2>&1
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --docdir=/usr/share/doc/expat-$VERSION >>"$LOGFILE" 2>&1
+}
+
+post_install()
+{
+    {
+    install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-$VERSION
+    } >>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

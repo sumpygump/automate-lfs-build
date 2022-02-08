@@ -1,9 +1,9 @@
 # automate-lfs-build
 
 This repository is a set of script which can be used to automate LFS build. It
-follows the suggested flow from version 8.4 of teh Linux From Scratch book
+follows the suggested flow from version 11.0 of the Linux From Scratch book
 which you can find at linuxfromscratch.org:
-https://linuxfromscratch.org/museum/lfs-museum/8.4/LFS-BOOK-8.4-HTML/index.html
+https://linuxfromscratch.org/lfs/view/stable/
 
 ### Requirements
 

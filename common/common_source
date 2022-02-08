@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ME=$(basename "$0")
-SRCDIR="/lfs-source"
+SRCDIR="/sources"
 TMP="$LFS/tmp"
 WORKBENCH="$TMP/build"
 LOGPATH="$TMP/log"
@@ -62,7 +62,7 @@ warn_if_missing()
     local filename=$2
 
     if [ ! -f "$SRCDIR/$filename" ]; then
-        echo "Package $NAME source code is not available.. Please download it manually and place it inside /lfs-source folder"
+        echo "Package $NAME source code is not available.. Please download it manually and place it inside /sources folder"
         echo $url
         return 1
     fi

@@ -12,6 +12,7 @@ configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
     BUILD_PATH=$(pwd)
+
     perl Makefile.PL >>"$LOGFILE" 2>&1
 }
 

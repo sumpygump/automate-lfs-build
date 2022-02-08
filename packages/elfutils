@@ -5,25 +5,28 @@ source "$(dirname "$0")"/../common/common_source
 NAME=elfutils
 VERSION=$ELFUTILS_VER
 TARFILE=$NAME-$VERSION.tar.bz2
-FETCH_URL="https://sourceware.org/ftp/elfutils/0.176/$TARFILE"
+FETCH_URL="https://sourceware.org/ftp/elfutils/$VERSION/$TARFILE"
 mSBU=1300
 
 configure()
 {
-    default_configure_chroot "$WORKBENCH/$NAME-$VERSION"
-}
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
 
-build()
-{
-    cd "$BUILD_PATH"
-    make -ik $SILENT_MAKE $MAKE_JOBS >>"$LOGFILE" 2>&1
-    return 0
+    ./configure \
+        --prefix=/usr \
+        --disable-debuginfod \
+        --enable-libdebuginfod=dummy >>"$LOGFILE" 2>&1
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make -ik $SILENT_MAKE $MAKE_JOBS -C libelf install >>"$LOGFILE" 2>&1
+    # Install only libelf
+
+    make $SILENT_MAKE $MAKE_JOBS -C libelf install >>"$LOGFILE" 2>&1
+    install -vm644 config/libefl.pc /usr/lib/pkgconfig
+    rm /usr/lib/libelf.a
     return 0
 }
 

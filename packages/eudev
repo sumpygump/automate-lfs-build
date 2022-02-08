@@ -6,82 +6,56 @@ NAME=eudev
 VERSION=$EUDEV_VER
 TARFILE=$NAME-$VERSION.tar.gz
 FETCH_URL="https://dev.gentoo.org/~blueness/eudev/$TARFILE"
-FETCH_PATCH="http://anduin.linuxfromscratch.org/LFS/udev-lfs-20171102.tar.bz2"
+FETCH_LFS="https://anduin.linuxfromscratch.org/LFS/udev-lfs-20171102.tar.xz"
 mSBU=200
 
 provide_source_urls()
 {
-    echo $FETCH_URL $FETCH_PATCH
+    echo $FETCH_URL $FETCH_LFS
     return 0
 }
 
 fetch()
 {
     warn_if_missing $FETCH_URL $TARFILE
-    warn_if_missing $FETCH_PATCH $(basename $FETCH_PATCH)
-}
-
-extract()
-{
-    [ -d "$WORKBENCH/$NAME-$VERSION" ] && rm -rf "$WORKBENCH/$NAME-$VERSION"
-
-    default_extract "$SRCDIR/$TARFILE"
-    if [ $? -ne 0 ]; then
-        echo "Extracting $SRCDIR/$TARFILE failed"
-        return 1
-    fi
-
-    default_extract "$SRCDIR/udev-lfs-20171102.tar.bz2"
-    if [ $? -ne 0 ]; then
-        echo "Extracting $SRCDIR/udev-lfs-20171102.tar.bz2 failed"
-        return 1
-    fi
-    return 0
+    warn_if_missing $FETCH_LFS $(basename $FETCH_LFS)
 }
 
 configure()
 {
     cd "$WORKBENCH/$NAME-$VERSION"
-    mkdir build
-    cd build
     BUILD_PATH=$(pwd)
 
-    cat > config.cache << "EOF"
-HAVE_BLKID=1
-BLKID_LIBS="-lblkid"
-BLKID_CFLAGS="-I/tools/include"
-EOF
-    ../configure --prefix=/usr          \
-            --bindir=/sbin              \
-            --sbindir=/sbin             \
-            --libdir=/usr/lib           \
-            --sysconfdir=/etc           \
-            --libexecdir=/lib           \
-            --with-rootprefix=          \
-            --with-rootlibdir=/lib      \
-            --enable-manpages           \
-            --disable-static            \
-            --config-cache >>"$LOGFILE" 2>&1
-}
-
-build()
-{
-    cd "$BUILD_PATH"
-    LIBRARY_PATH=/tools/lib make $SILENT_MAKE $MAKE_JOBS >>"$LOGFILE" 2>&1
+    ./configure --prefix=/usr \
+            --bindir=/usr/sbin \
+            --sysconfdir=/etc \
+            --enable-manpages \
+            --disable-static >>"$LOGFILE" 2>&1
 }
 
 build_install()
 {
     cd "$BUILD_PATH"
-    make LD_LIBRARY_PATH=/tools/lib $SILENT_MAKE $MAKE_JOBS install >>"$LOGFILE" 2>&1
+    {
+    mkdir -pv /usr/lib/udev/rules.d
+    mkdir -pv /etc/udev/rules.d
+    make $MAKE_JOBS install
+    } >>"$LOGFILE" 2>&1
 }
 
 post_install()
 {
     cd "$WORKBENCH"
+
+    # Install some custom rules and support files for LFS environment
+    local lfsfile=$(basename $FETCH_LFS)
+    {
+    cp -vf "$SRCDIR/$lfsfile" "$WORKBENCH"
+    tar -xvf $lfsfile
     make $SILENT_MAKE $MAKE_JOBS -f udev-lfs-20171102/Makefile.lfs install >>"$LOGFILE" 2>&1
     [ $? -ne 0 ] && return 1
-    LD_LIBRARY_PATH=/tools/lib udevadm hwdb --update
+    udevadm hwdb --update
+    } >>"$LOGFILE" 2>&1
 }
 
 cleanup()

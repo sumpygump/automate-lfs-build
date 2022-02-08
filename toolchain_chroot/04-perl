@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source "$(dirname "$0")"/../common/common_source
+
+NAME=perl
+VERSION=$PERL_VER
+TARFILE=$NAME-$VERSION.tar.xz
+FETCH_URL="https://www.cpan.org/src/5.0/$TARFILE"
+mSBU=1700
+
+configure()
+{
+    cd "$WORKBENCH/$NAME-$VERSION"
+    BUILD_PATH=$(pwd)
+
+    sh Configure -des                               \
+        -Dprefix=/usr                               \
+        -Dvendorprefix=/usr                         \
+        -Dprivlib=/usr/lib/perl5/5.34/core_perl     \
+        -Darchlib=/usr/lib/perl5/5.34/core_perl     \
+        -Dsitelib=/usr/lib/perl5/5.34/site_perl     \
+        -Dsitearch=/usr/lib/perl5/5.34/site_perl    \
+        -Dvendorlib=/usr/lib/perl5/5.34/vendor_perl \
+        -Dvendorarch=/usr/lib/perl5/5.34/vendor_perl >>"$LOGFILE" 2>&1
+}
+
+source "$(dirname "$0")"/../common/common_exec
