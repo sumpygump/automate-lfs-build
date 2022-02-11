@@ -37,7 +37,7 @@ else
         kmod elfutils libffi openssl python ninja meson coreutils check diffutils \
         gawk findutils groff grub gzip iproute kbd libpipeline make patch tar \
         texinfo vim eudev man-db procps-ng util-linux e2fsprogs sysklogd sysvinit \
-        lfs-bootscripts"
+        linux-kernel lfs-bootscripts"
 fi
 
 assert_is_root()

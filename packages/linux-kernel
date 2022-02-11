@@ -13,10 +13,10 @@ configure()
     cd "$WORKBENCH/$NAME-$VERSION"
     mkdir build
 
-    make O=build x86_64_defconfig  >>"$LOGFILE" 2>&1
+    make O=build x86_64_defconfig >>"$LOGFILE" 2>&1
     [ $? -ne 0 ] && return 1
 
-    make O=build kvmconfig  >>"$LOGFILE" 2>&1
+    make O=build kvm_guest.config >>"$LOGFILE" 2>&1
     [ $? -ne 0 ] && return 1
     cd build
     BUILD_PATH=$(pwd)
@@ -25,7 +25,7 @@ configure()
 build()
 {
     cd "$BUILD_PATH"
-    make "$MAKE_JOBS"  >>"$LOGFILE" 2>&1
+    make "$MAKE_JOBS" >>"$LOGFILE" 2>&1
     make modules >>"$LOGFILE" 2>&1
 }
 
@@ -36,8 +36,20 @@ build_install()
     make modules_install >>"$LOGFILE" 2>&1
     make install >>"$LOGFILE" 2>&1
 
-    # Rename the vmlinuz file to be specific versioned
-    mv -vp /boot/vmlinuz /boot/vmlinuz-$VERSION-lfs-11.0 >>"$LOGFILE" 2>&1
+    {
+    # Copy the kernel image to boot dir, named with specific version
+    cp -iv arch/x86/boot/bzImage /boot/vmlinuz-$VERSION-lfs-11.0
+
+    # Also copy the System.map file; used when investigating kernel problems
+    cp -iv System.map /boot/System.map-$VERSION
+
+    # Also copy the kernel config file we generated for this build
+    cp -iv .config /boot/config-$VERSION
+
+    # Install documentation for linux kernel
+    install -d /usr/share/doc/linux-$VERSION
+    cp -r ../Documentation/* /usr/share/doc/linux-$VERSION
+    }>>"$LOGFILE" 2>&1
 }
 
 source "$(dirname "$0")"/../common/common_exec

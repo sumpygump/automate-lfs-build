@@ -78,7 +78,7 @@ main()
         fatal "Error with system configuration steps"
     fi
 
-    echo "Congratulations\! Everything is done and you are ready to boot LFS"
+    echo "Congratulations! Everything is done and you are ready to boot LFS"
     echo "One last thing to do though: set the root password."
     echo "Run ./enter-chroot to re-enter the chroot and execute command 'passwd root'"
     echo "-------------------------------------------"

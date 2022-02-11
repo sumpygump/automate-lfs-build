@@ -21,8 +21,10 @@ post_build()
     cd "$BUILD_PATH"
     make $SILENT_MAKE $MAKE_JOBS html >>"$LOGFILE" 2>&1
 
+    {
     chown -Rv tester .
-    su tester -c "PATH=$PATH make check" >>"$LOGFILE" 2>&1
+    su tester -c "PATH=$PATH make check"
+    } >>"$LOGFILE" 2>&1
 }
 
 post_install()
