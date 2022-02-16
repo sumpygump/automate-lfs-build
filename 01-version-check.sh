@@ -98,6 +98,7 @@ assert_has python3 && success $(python3 --version)
 assert_has sed && success $(sed --version | head -n1)
 assert_has tar && success $(tar --version | head -n1)
 assert_has makeinfo texinfo && success $(makeinfo --version | head -n1)
+assert_has wget && success $(wget --version | head -n1)
 assert_has xz && success $(xz --version | head -n1)
 
 if [ $HAS_GPP -eq 1 ]; then

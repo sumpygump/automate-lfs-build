@@ -53,7 +53,7 @@ setup_lfs_user()
         echo 'lfs:lfs'| chpasswd
     fi
 
-    chown -v lfs $LFS/{usr{,/*},lib,var,etc,bin,sbin,tools}
+    chown -v lfs $LFS/{usr{,/*},lib,var,etc,bin,sbin,tmp,tools}
     case $(uname -m) in
         x86_64) chown -v lfs $LFS/lib64 ;;
     esac
@@ -108,7 +108,7 @@ setup_dirs()
 {
     printf "Setting up dirs for lfs toolchain ..."
 
-    mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
+    mkdir -pv $LFS/{etc,tmp,var} $LFS/usr/{bin,lib,sbin}
 
     for i in bin lib sbin; do
         [ ! -L $LFS/$i ] && ln -svf usr/$i $LFS/$i

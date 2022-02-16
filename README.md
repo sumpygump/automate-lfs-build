@@ -9,7 +9,7 @@ https://linuxfromscratch.org/lfs/view/stable/
 
 Install the basic required packages in a debian based distribution using the following command:
 
-`$ apt install build-essential bison texinfo gawk git python2.7 kpartx -y`
+`$ apt install build-essential bison texinfo gawk git python3 kpartx wget -y`
 
 ### Recommended partition set up
 

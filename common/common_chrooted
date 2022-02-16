@@ -21,19 +21,21 @@ assert_is_root()
 
 mount_psudoroot()
 {
+    echo "See log at $LFS/tmp/chroot.log"
     echo $(date -uR) >> $LFS/tmp/chroot.log
     chown root:root "$LFS"
     {
     # Mount and populate /dev
-    mount -v --bind /dev "$LFS"/dev &&
+    mount -v --bind /dev $LFS/dev
 
     # Mount virtual kernel file systems
     mount -v --bind /dev/pts $LFS/dev/pts
-    mount -vt proc proc "$LFS/proc" &&
-    mount -vt sysfs sysfs "$LFS/sys" &&
-    mount -vt tmpfs tmpfs "$LFS/run"
-    if [ -h "$LFS/dev/shm" ]; then
-        mkdir -pv "$LFS"/$(readlink "$LFS/dev/shm")
+    mount -vt proc proc $LFS/proc
+    mount -vt sysfs sysfs $LFS/sys
+    mount -vt tmpfs tmpfs $LFS/run
+
+    if [ -h $LFS/dev/shm ]; then
+        mkdir -pv $LFS/$(readlink $LFS/dev/shm)
     fi
     } >>"$LFS/tmp/chroot.log" 2>&1
 }
@@ -212,8 +214,14 @@ create_custom_udev_rules()
     assert_in_chroot
 
     bash /lib/udev/init-net-rules.sh
-    echo "Contents of /etc/udev/rules.d/70-persistent-net.rules:"
-    info $(cat /etc/udev/rules.d/70-persistent-net.rules | grep 'NAME="')
+
+    local target_file=/etc/udev/rules.d/70-persistent-net.rules
+    if [ -f $target_file ]; then
+        echo "Contents of $target_file:"
+        info $(cat $target_file | grep 'NAME="')
+    else
+        error "Did not create $target_file"
+    fi
 }
 
 create_nic_files()
@@ -442,6 +450,7 @@ setup_grub()
     echo "Creating grub entry..."
     assert_in_chroot
 
+    echo "Using drive $LFS_DIRVE for grub install"
     if [ -z "$LFS_DRIVE" ]; then
         error "Not sure which drive to add grub to; aborting."
         return 1
@@ -450,6 +459,9 @@ setup_grub()
     LINUX_VERSION="5.13.12-lfs-11.0"
 
     grub-install --target i386-pc $LFS_DRIVE
+    if [ $? -ne 0 ]; then
+        error "Failed installing grub entry"
+    fi
 
     cat > /boot/grub/grub.cfg <<EOF
 # Begin /boot/grub/grub.cfg
