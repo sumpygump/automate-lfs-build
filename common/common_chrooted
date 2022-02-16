@@ -217,8 +217,8 @@ create_custom_udev_rules()
 
     local target_file=/etc/udev/rules.d/70-persistent-net.rules
     if [ -f $target_file ]; then
-        echo "Contents of $target_file:"
-        info $(cat $target_file | grep 'NAME="')
+        echo "Pertinent line from $target_file:"
+        info $(cat $target_file | grep -io 'NAME="[^"]*"')
     else
         error "Did not create $target_file"
     fi
@@ -450,7 +450,7 @@ setup_grub()
     echo "Creating grub entry..."
     assert_in_chroot
 
-    echo "Using drive $LFS_DIRVE for grub install"
+    echo "Using drive $LFS_DRIVE for grub install"
     if [ -z "$LFS_DRIVE" ]; then
         error "Not sure which drive to add grub to; aborting."
         return 1

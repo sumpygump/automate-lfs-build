@@ -43,6 +43,7 @@ make_bootable_as_chroot()
         echo "Cannot read automate-lfs-build dir"
     fi
     source /automate-lfs-build/common/common_chrooted
+    hr
     create_custom_udev_rules && hr
     create_nic_files && hr
     create_resolv_file && hr
